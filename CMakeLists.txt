@@ -13,13 +13,13 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        push_notification/pushnotification.cpp
-        push_notification/pushnotification.h
-        resources.qrc
+        Brithday-App/main.cpp
+        Brithday-App/mainwindow.cpp
+        Brithday-App/mainwindow.h
+        Brithday-App/mainwindow.ui
+        Brithday-App/push_notification/pushnotification.cpp
+        Brithday-App/push_notification/pushnotification.h
+        Brithday-App/resources.qrc
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
