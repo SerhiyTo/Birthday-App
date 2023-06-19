@@ -45,7 +45,8 @@
      </font>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string>✍️ Click the button below to add
+a new person to the database</string>
     </property>
     <property name="textFormat">
      <enum>Qt::PlainText</enum>
@@ -64,7 +65,11 @@
      <string/>
     </property>
     <property name="pixmap">
+<<<<<<< HEAD:BirthdayAPP/mainwindow.ui
      <pixmap>../graphics/bird.png</pixmap>
+=======
+     <pixmap resource="resources.qrc">:/graphics/bird.png</pixmap>
+>>>>>>> 5a7caa82e4498e13ede3e16faae7e3132e5c3870:mainwindow.ui
     </property>
     <property name="scaledContents">
      <bool>false</bool>
@@ -85,13 +90,24 @@
       <pointsize>12</pointsize>
      </font>
     </property>
+<<<<<<< HEAD:BirthdayAPP/mainwindow.ui
     <property name="text">
      <string>PushButton</string>
+=======
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Add people</string>
+>>>>>>> 5a7caa82e4498e13ede3e16faae7e3132e5c3870:mainwindow.ui
     </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
