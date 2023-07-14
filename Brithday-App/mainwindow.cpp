@@ -33,6 +33,24 @@ void MainWindow::on_btnCancel_clicked()
 
 void MainWindow::on_btnOk_clicked()
 {
+    //get info
+    QString event_name = ui->lnNameInput->text();
+    QDate event_date = ui->datInput->date();
 
+    //create json
+    QJsonObject record_object;
+    record_object.insert("Name", QJsonValue::fromVariant(event_name));
+    record_object.insert("Date", QJsonValue::fromVariant(event_date));
+
+    //debug checkout (may be removed)
+    QJsonDocument doc(record_object);
+    qDebug() << doc.toJson();
+
+    //write to file
+    QString file_name = "./EventList.json";//open directory of .exe file
+    QFile json_file(file_name);
+    json_file.open(QIODevice::WriteOnly | QIODevice::Append);
+    json_file.write(doc.toJson());
+    json_file.close();
 }
 
