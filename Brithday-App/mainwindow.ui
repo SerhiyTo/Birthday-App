@@ -32,9 +32,9 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>150</x>
       <y>60</y>
-      <width>301</width>
+      <width>281</width>
       <height>471</height>
      </rect>
     </property>
@@ -48,7 +48,7 @@
         <pixmap resource="resources.qrc">:/graphics/bird.png</pixmap>
        </property>
        <property name="scaledContents">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -61,11 +61,15 @@
         </font>
        </property>
        <property name="text">
-        <string>✍️ Click the button below to add
-a new person to the database</string>
+        <string>✍️ Click the button below
+ to add a new person
+ to the database</string>
        </property>
        <property name="textFormat">
         <enum>Qt::PlainText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -91,10 +95,10 @@ color: rgb(255, 255, 255);</string>
    <widget class="QFrame" name="frMessageOpen">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>290</x>
       <y>200</y>
-      <width>301</width>
-      <height>176</height>
+      <width>319</width>
+      <height>161</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -102,32 +106,62 @@ color: rgb(255, 255, 255);</string>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QRadioButton" name="radioButton_4">
+      <widget class="QLabel" name="label_3">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
-        <string>RadioButton</string>
+        <string>Adding people</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_3">
-       <property name="text">
-        <string>RadioButton</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="lblNameInput">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Enter the people's name:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lnNameInput"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
-       <property name="text">
-        <string>RadioButton</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="lblDateInput">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Enter the people's birthday</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDateEdit" name="datInput"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton">
-       <property name="text">
-        <string>RadioButton</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="btns">
+       <item>
+        <widget class="QPushButton" name="btnCancel">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnOk">
+         <property name="text">
+          <string>OK</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

@@ -19,10 +19,13 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_buttonAdd_clicked();
+    void on_btnAddPeople_clicked();
+
+    void on_btnCancel_clicked();
+
+    void on_btnOk_clicked();
 
 private:
     Ui::MainWindow *ui;
-    QLabel* text_upper_button;
 };
 #endif // MAINWINDOW_H
