@@ -18,9 +18,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_btnAddPeople_clicked();
+
+    void on_btnCancel_clicked();
+
+    void on_btnOk_clicked();
+
 private:
     Ui::MainWindow *ui;
-    QPushButton* button_adding;
-    QLabel* text_upper_button;
 };
 #endif // MAINWINDOW_H
