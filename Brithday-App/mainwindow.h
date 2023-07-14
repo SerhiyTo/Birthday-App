@@ -5,6 +5,9 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QPixmap>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QFile>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
