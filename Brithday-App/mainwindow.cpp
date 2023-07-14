@@ -8,12 +8,17 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     // Set linear gradient for background
     this->setStyleSheet("background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(240, 240, 240, 0.79), stop:1 rgba(240, 240, 240, 1));");
 
-    button_adding = ui->buttonAdd;  // Add button for calling form for input user's info
-    text_upper_button = ui->text_upper_button;  // Text above the button
+    ui->frMessageOpen->hide();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::on_buttonAdd_clicked()
+{
+    ui->frMessageOpen->show();
 }
 
