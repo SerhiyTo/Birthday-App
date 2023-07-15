@@ -36,14 +36,10 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     }
     else
     {
-        doc = QJsonDocument::fromJson("[]"); // Create an empty JSON array if the file doesn't exist
+        doc = QJsonDocument::fromJson("[]");  // Create an empty JSON array if the file doesn't exist
     }
 
-    if (!doc.isArray())
-    {
-        qInfo() << "JSON document is not an array.";
-        return;
-    }
+    if (!doc.isArray()) return;
 
     // Create new JSON object
     QJsonObject record_object;
@@ -64,30 +60,19 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
 {
     QFile jsonFileToRead(file_name_to_read);
     jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
-    if(!jsonFileToRead.isOpen())
-    {
-        qInfo()<<"File is not opened!";
-        return;
-    }
+    if(!jsonFileToRead.isOpen()) return;
+
     QString readInfo = jsonFileToRead.readAll();  // Get all data from JSON file
     jsonFileToRead.close();  // Closing file
 
-    QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(readInfo.toUtf8(), &error);  // Convert data to UTF-8
-    if (error.error)
-    {
-        qInfo() << "Error: " << error.errorString();
-    }
+    QJsonDocument doc = QJsonDocument::fromJson(readInfo.toUtf8());  // Convert data to UTF-8
     QJsonArray jArr = doc.array();  // Casting our data from json to array
-
-    qInfo() << doc;
 
     QString dateUser, nameUser;  // Creating variable for using its in loop
     for (auto jsonObj : jArr)
     {
         dateUser = jsonObj.toObject().value("Date").toString();  // Get data from JSON with key parametr "Date"
         nameUser = jsonObj.toObject().value("Name").toString();  // Get data from JSON with key parametr "Name"
-        qInfo() << dateUser << typeid(dateUser).name() << "\n" << nameUser << typeid(nameUser).name();
         generate_label(dateUser, nameUser);  // Calling function "generate label" for display current data in label
     }
 }
@@ -97,7 +82,8 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 {
     QVBoxLayout* layOneUser = new QVBoxLayout;
     QFrame* frLayWithData = new QFrame;
-    //layOneUser->setc
+
+    // layOneUser->setc
     QLabel* lblUserName = new QLabel(nameUser);
     QLabel* lblUserDate = new QLabel(dateUser);
 
