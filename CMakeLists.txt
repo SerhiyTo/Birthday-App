@@ -20,8 +20,6 @@ set(PROJECT_SOURCES
         Brithday-App/push_notification/pushnotification.cpp
         Brithday-App/push_notification/pushnotification.h
         Brithday-App/resources.qrc
-        Brithday-App/dataforlabel.cpp
-        Brithday-App/dataforlabel.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

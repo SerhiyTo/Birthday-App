@@ -37,11 +37,13 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     json_file.open(QIODevice::WriteOnly | QIODevice::Append);
     json_file.write(doc.toJson());
     json_file.close();
+
+    read_from_json(file_name_to_write);
 }
 
 void MainWindow::read_from_json(const QString& file_name_to_read)
 {
-    QFile jsonFileToRead(file_name);
+    QFile jsonFileToRead(file_name_to_read);
     jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
     QString readInfo = jsonFileToRead.readAll();  // Get all data from JSON file
     jsonFileToRead.close();  // Closing file
