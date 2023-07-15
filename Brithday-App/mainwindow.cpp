@@ -25,17 +25,38 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     QString event_name = ui->lnNameInput->text();
     QDate event_date = ui->datInput->date();
 
-    // Create json
+    // Read existing JSON file
+    QFile json_file(file_name_to_write);
+    QJsonDocument doc;
+    if (json_file.exists() && json_file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QByteArray jsonData = json_file.readAll();
+        doc = QJsonDocument::fromJson(jsonData);
+        json_file.close();
+    }
+    else
+    {
+        doc = QJsonDocument::fromJson("[]"); // Create an empty JSON array if the file doesn't exist
+    }
+
+    if (!doc.isArray())
+    {
+        qInfo() << "JSON document is not an array.";
+        return;
+    }
+
+    // Create new JSON object
     QJsonObject record_object;
     record_object.insert("Name", QJsonValue::fromVariant(event_name));
     record_object.insert("Date", QJsonValue::fromVariant(event_date));
 
-    QJsonDocument doc(record_object);
+    // Append the new object to the array
+    QJsonArray jsonArray = doc.array();
+    jsonArray.append(record_object);
 
-    // Write to file
-    QFile json_file(file_name_to_write);
-    json_file.open(QIODevice::WriteOnly | QIODevice::Append);
-    json_file.write(doc.toJson());
+    // Write the updated JSON array to the file
+    json_file.open(QIODevice::WriteOnly | QIODevice::Text);
+    json_file.write(QJsonDocument(jsonArray).toJson());
     json_file.close();
 }
 
@@ -43,10 +64,13 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
 {
     QFile jsonFileToRead(file_name);
     jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
+    if(!jsonFileToRead.isOpen())
+    {
+        qInfo()<<"File is not opened!";
+        return;
+    }
     QString readInfo = jsonFileToRead.readAll();  // Get all data from JSON file
     jsonFileToRead.close();  // Closing file
-
-    qInfo() << readInfo;
 
     QJsonParseError error;
     QJsonDocument doc = QJsonDocument::fromJson(readInfo.toUtf8(), &error);  // Convert data to UTF-8
@@ -58,7 +82,7 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
 
     qInfo() << doc;
 
-    QString dateUser, nameUser;  // Creating variable for using its in loop    
+    QString dateUser, nameUser;  // Creating variable for using its in loop
     for (auto jsonObj : jArr)
     {
         dateUser = jsonObj.toObject().value("Date").toString();  // Get data from JSON with key parametr "Date"
@@ -68,11 +92,12 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
     }
 }
 
+
 void MainWindow::generate_label(const QString& dateUser, const QString& nameUser)
 {
     QVBoxLayout* layOneUser = new QVBoxLayout;
     QFrame* frLayWithData = new QFrame;
-
+    //layOneUser->setc
     QLabel* lblUserName = new QLabel(nameUser);
     QLabel* lblUserDate = new QLabel(dateUser);
 
