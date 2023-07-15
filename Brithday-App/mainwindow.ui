@@ -243,7 +243,7 @@ color: rgb(255, 255, 255);</string>
        <x>0</x>
        <y>80</y>
        <width>261</width>
-       <height>531</height>
+       <height>231</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="laForData"/>

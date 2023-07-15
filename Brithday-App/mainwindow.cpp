@@ -80,10 +80,18 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
 
 void MainWindow::generate_label(const QString& dateUser, const QString& nameUser)
 {
-    QVBoxLayout* layOneUser = new QVBoxLayout;
+    if(ui->laForData->count() >= 6)
+    {
+        qInfo()<<"Object will not be added. Chil elements >=6";
+        return;
+    }
+    QHBoxLayout* layOneUser = new QHBoxLayout;
     QFrame* frLayWithData = new QFrame;
 
+<<<<<<< HEAD
     // layOneUser->setc
+=======
+>>>>>>> 1d8f7610fa60b9c37de67042f01639fd3532e792
     QLabel* lblUserName = new QLabel(nameUser);
     QLabel* lblUserDate = new QLabel(dateUser);
 
