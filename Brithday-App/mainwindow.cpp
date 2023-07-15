@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -28,16 +29,14 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     // Read existing JSON file
     QFile json_file(file_name_to_write);
     QJsonDocument doc;
+
     if (json_file.exists() && json_file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QByteArray jsonData = json_file.readAll();
         doc = QJsonDocument::fromJson(jsonData);
         json_file.close();
     }
-    else
-    {
-        doc = QJsonDocument::fromJson("[]");  // Create an empty JSON array if the file doesn't exist
-    }
+    else doc = QJsonDocument::fromJson("[]");  // Create an empty JSON array if the file doesn't exist
 
     if (!doc.isArray()) return;
 
@@ -80,20 +79,20 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
 
 void MainWindow::generate_label(const QString& dateUser, const QString& nameUser)
 {
-    if(ui->laForData->count() >= 6)
-    {
-        qInfo()<<"Object will not be added. Chil elements >=6";
-        return;
-    }
+    if(ui->laForData->count() >= 6) return;
+
     QHBoxLayout* layOneUser = new QHBoxLayout;
     QFrame* frLayWithData = new QFrame;
 
-<<<<<<< HEAD
-    // layOneUser->setc
-=======
->>>>>>> 1d8f7610fa60b9c37de67042f01639fd3532e792
-    QLabel* lblUserName = new QLabel(nameUser);
-    QLabel* lblUserDate = new QLabel(dateUser);
+    QDate currentDay = QDate::currentDate();
+    QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
+
+    QString formattedDate = dateFromString.toString("dd.MM");  // Format date
+    QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
+
+    QLabel* lblUserName = new QLabel(nameUser);  // Creating new Label with User Name
+    QLabel* lblUserDate = new QLabel(formattedDate + daysToBirthday);  // Creating new Label with our formatted date
+                                                                       // and counted days to birthday
 
     layOneUser->addWidget(lblUserName);
     layOneUser->addWidget(lblUserDate);
