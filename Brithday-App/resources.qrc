@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>graphics/bird.png</file>
         <file>graphics/resources.qrc</file>
+        <file>graphics/birthday-cake.ico</file>
     </qresource>
 </RCC>
