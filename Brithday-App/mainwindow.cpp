@@ -28,7 +28,7 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
 
     // Read existing JSON file
     QFile json_file(file_name_to_write);
-    QJsonDocument doc;
+    QJsonDocument doc = QJsonDocument::fromJson("[]");
 
     if (json_file.exists() && json_file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -36,22 +36,40 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
         doc = QJsonDocument::fromJson(jsonData);
         json_file.close();
     }
-    else doc = QJsonDocument::fromJson("[]");  // Create an empty JSON array if the file doesn't exist
-
-    if (!doc.isArray()) return;
 
     // Create new JSON object
     QJsonObject record_object;
     record_object.insert("Name", QJsonValue::fromVariant(event_name));
     record_object.insert("Date", QJsonValue::fromVariant(event_date));
 
-    // Append the new object to the array
-    QJsonArray jsonArray = doc.array();
-    jsonArray.append(record_object);
+
+    // Sort array
+    QJsonArray jarrToSort =  doc.array();
+    jarrToSort.append(record_object);
+    QVector<QDate> datesVec;
+    QJsonValue temp;
+    //create vector for dates
+    for(int i=0;i<jarrToSort.size();i++)
+    {
+        datesVec.append(QDate::fromString(jarrToSort[i].toObject()["Date"].toString(), "yyyy-MM-dd"));
+    }
+    //buuble sort for dates
+    for(int i=0;i<datesVec.size()-1;i++)
+    {
+        if(datesVec[i]>datesVec[i+1])
+        {
+            temp = jarrToSort[i];
+            jarrToSort[i] = jarrToSort[i+1];
+            jarrToSort[i+1] = temp;
+            std::swap(datesVec[i],datesVec[i+1]);
+            i-=i==0?1:2;
+            continue;
+        }
+    }
 
     // Write the updated JSON array to the file
     json_file.open(QIODevice::WriteOnly | QIODevice::Text);
-    json_file.write(QJsonDocument(jsonArray).toJson());
+    json_file.write(QJsonDocument(jarrToSort).toJson());
     json_file.close();
 }
 
@@ -81,11 +99,12 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 {
     if(ui->laForData->count() >= 6) return;
 
-    QHBoxLayout* layOneUser = new QHBoxLayout;
+    QVBoxLayout* layOneUser = new QVBoxLayout;
     QFrame* frLayWithData = new QFrame;
 
     QDate currentDay = QDate::currentDate();
     QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
+    if(currentDay.daysTo(dateFromString) < 0)return;
 
     QString formattedDate = dateFromString.toString("dd.MM");  // Format date
     QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
@@ -93,7 +112,12 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
     QLabel* lblUserName = new QLabel(nameUser);  // Creating new Label with User Name
     QLabel* lblUserDate = new QLabel(formattedDate + daysToBirthday);  // Creating new Label with our formatted date
                                                                        // and counted days to birthday
+    //label with user name formating
+    QFont userNameFont = lblUserName->font();
+    userNameFont.setBold(true);
+    lblUserName->setFont(userNameFont);
 
+    //add to form
     layOneUser->addWidget(lblUserName);
     layOneUser->addWidget(lblUserDate);
 
