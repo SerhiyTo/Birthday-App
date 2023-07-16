@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -15,10 +16,12 @@ MainWindow::MainWindow(QWidget *parent)
     read_from_json(file_name);
 }
 
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+
 
 void MainWindow::write_to_json(const QString& file_name_to_write)
 {
@@ -46,6 +49,20 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     // Sort array
     QJsonArray jarrToSort =  doc.array();
     jarrToSort.append(record_object);
+
+    sort_json_data(jarrToSort);
+
+    // Write the updated JSON array to the file
+    json_file.open(QIODevice::WriteOnly | QIODevice::Text);
+    json_file.write(QJsonDocument(jarrToSort).toJson());
+    json_file.close();
+
+    read_from_json(file_name_to_write);
+}
+
+
+void MainWindow::sort_json_data(QJsonArray &jarrToSort)
+{
     QVector<QDate> datesVec;
     QJsonValue temp;
 
@@ -58,7 +75,7 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     // Bubble sort for dates
     for (int i = 0; i < datesVec.size() - 1; i++)
     {
-        if(datesVec[i]>datesVec[i+1])
+        if(datesVec[i] > datesVec[i+1])
         {
             temp = jarrToSort[i];
             jarrToSort[i] = jarrToSort[i+1];
@@ -68,17 +85,14 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
             continue;
         }
     }
-
-    // Write the updated JSON array to the file
-    json_file.open(QIODevice::WriteOnly | QIODevice::Text);
-    json_file.write(QJsonDocument(jarrToSort).toJson());
-    json_file.close();
-
-    read_from_json(file_name_to_write);
 }
+
 
 void MainWindow::read_from_json(const QString& file_name_to_read)
 {
+    QLayoutItem* wItem;
+    while ((wItem = ui->laForData->takeAt(0)) != 0) delete wItem;
+
     QFile jsonFileToRead(file_name_to_read);
     jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
     if (!jsonFileToRead.isOpen()) return;
@@ -122,12 +136,14 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
     userNameFont.setBold(true);
     lblUserName->setFont(userNameFont);
 
-    //delete button
+    // Delete button
     std::unique_ptr<QPushButton> deleteButton = std::make_unique<QPushButton>();
     deleteButton->setText("Delete");
     deleteButton->setStyleSheet("background-color: red;");
 
-    //add to form
+    connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() { delete_from_json(dateUser, nameUser); });
+
+    // Add to form
     layOneUser->addWidget(lblUserName.release(), 0, 0);
     layOneUser->addWidget(deleteButton.release(), 0, 1);
     layOneUser->addWidget(lblUserDate.release(), 1, 0);
@@ -135,6 +151,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
     frLayWithData->setLayout(layOneUser.release());
     ui->laForData->addWidget(frLayWithData.release());
 }
+
 
 void MainWindow::on_btnAddPeople_clicked()
 {
@@ -161,3 +178,31 @@ void MainWindow::on_btnOk_clicked()
     ui->frMessageOpen->hide();  // Hide the form
 }
 
+
+void MainWindow::delete_from_json(const QString& dateUser, const QString& nameUser)
+{
+    QFile file(file_name);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    if (!file.isOpen()) return;
+
+    QString readInfo = file.readAll();  // Get all data from JSON file
+    file.close();  // Closing file
+
+    QJsonArray jArr = QJsonDocument::fromJson(readInfo.toUtf8()).array();  // Convert data to UTF-8
+
+    for (int i = 0; i < jArr.size(); ++i)
+    {
+        if (jArr[i].toObject().value("Date").toString() == dateUser &&
+            jArr[i].toObject().value("Name").toString() == nameUser)
+        {
+            jArr.removeAt(i);
+            break;
+        }
+    }
+
+    file.open(QIODevice::WriteOnly);
+    file.write(QJsonDocument(jArr).toJson());
+    file.close();
+
+    read_from_json(file_name);
+}
