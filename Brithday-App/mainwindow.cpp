@@ -111,7 +111,7 @@ void MainWindow::on_btnAddPeople_clicked()
 void MainWindow::on_btnCancel_clicked()
 {
     ui->lnNameInput->clear();  // Clear the form
-    ui->datInput->setDate(QDate::currentDate());
+    ui->datInput->setDate(QDate::currentDate());  // Set current date by deffault in our QDate
     ui->frMessageOpen->hide();  // Hide our message
 }
 
@@ -123,7 +123,7 @@ void MainWindow::on_btnOk_clicked()
     QMessageBox::information(this, "People was added!", "Adding people to databasw was sucessed");
 
     ui->lnNameInput->clear();  // Clear the form
-    ui->datInput->setDate(QDate::currentDate());
-    ui->frMessageOpen->hide();
+    ui->datInput->setDate(QDate::currentDate());  // Set current date by deffault in our QDate
+    ui->frMessageOpen->hide();  // Hide the form
 }
 
