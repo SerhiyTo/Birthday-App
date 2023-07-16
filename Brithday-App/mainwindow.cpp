@@ -48,13 +48,15 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     jarrToSort.append(record_object);
     QVector<QDate> datesVec;
     QJsonValue temp;
-    //create vector for dates
-    for(int i=0;i<jarrToSort.size();i++)
+
+    // Сreate vector for dates
+    for (int i = 0; i < jarrToSort.size(); i++)
     {
         datesVec.append(QDate::fromString(jarrToSort[i].toObject()["Date"].toString(), "yyyy-MM-dd"));
     }
-    //buuble sort for dates
-    for(int i=0;i<datesVec.size()-1;i++)
+
+    // Bubble sort for dates
+    for (int i = 0; i < datesVec.size() - 1; i++)
     {
         if(datesVec[i]>datesVec[i+1])
         {
@@ -62,7 +64,7 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
             jarrToSort[i] = jarrToSort[i+1];
             jarrToSort[i+1] = temp;
             std::swap(datesVec[i],datesVec[i+1]);
-            i-=i==0?1:2;
+            i -= i == 0 ? 1 : 2;
             continue;
         }
     }
@@ -71,13 +73,15 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     json_file.open(QIODevice::WriteOnly | QIODevice::Text);
     json_file.write(QJsonDocument(jarrToSort).toJson());
     json_file.close();
+
+    read_from_json(file_name_to_write);
 }
 
 void MainWindow::read_from_json(const QString& file_name_to_read)
 {
     QFile jsonFileToRead(file_name_to_read);
     jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
-    if(!jsonFileToRead.isOpen()) return;
+    if (!jsonFileToRead.isOpen()) return;
 
     QString readInfo = jsonFileToRead.readAll();  // Get all data from JSON file
     jsonFileToRead.close();  // Closing file
@@ -97,33 +101,33 @@ void MainWindow::read_from_json(const QString& file_name_to_read)
 
 void MainWindow::generate_label(const QString& dateUser, const QString& nameUser)
 {
-    if(ui->laForData->count() >= 6) return;
+    if (ui->laForData->count() >= 6) return;
 
-    QVBoxLayout* layOneUser = new QVBoxLayout;
-    QFrame* frLayWithData = new QFrame;
+    std::unique_ptr<QVBoxLayout> layOneUser = std::make_unique<QVBoxLayout>();
+    std::unique_ptr<QFrame> frLayWithData = std::make_unique<QFrame>();
 
     QDate currentDay = QDate::currentDate();
     QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
-    if(currentDay.daysTo(dateFromString) < 0)return;
+    if (currentDay.daysTo(dateFromString) < 0) return;
 
     QString formattedDate = dateFromString.toString("dd.MM");  // Format date
     QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
 
-    QLabel* lblUserName = new QLabel(nameUser);  // Creating new Label with User Name
-    QLabel* lblUserDate = new QLabel(formattedDate + daysToBirthday);  // Creating new Label with our formatted date
-                                                                       // and counted days to birthday
-    //label with user name formating
+    std::unique_ptr<QLabel> lblUserName = std::make_unique<QLabel>(nameUser);  // Creating new Label with User Name
+    std::unique_ptr<QLabel> lblUserDate = std::make_unique<QLabel>(formattedDate + daysToBirthday);  // Creating new Label with our formatted date
+                                                                                                    // and counted days to birthday
+
+    // Label with user name formating
     QFont userNameFont = lblUserName->font();
     userNameFont.setBold(true);
     lblUserName->setFont(userNameFont);
 
-    //add to form
-    layOneUser->addWidget(lblUserName);
-    layOneUser->addWidget(lblUserDate);
+    // Add to form
+    layOneUser->addWidget(lblUserName.release());
+    layOneUser->addWidget(lblUserDate.release());
 
-    frLayWithData->setLayout(layOneUser);
-
-    ui->laForData->addWidget(frLayWithData);
+    frLayWithData->setLayout(layOneUser.release());
+    ui->laForData->addWidget(frLayWithData.release());
 }
 
 void MainWindow::on_btnAddPeople_clicked()
