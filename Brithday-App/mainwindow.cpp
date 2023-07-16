@@ -103,7 +103,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 {
     if (ui->laForData->count() >= 6) return;
 
-    std::unique_ptr<QVBoxLayout> layOneUser = std::make_unique<QVBoxLayout>();
+    std::unique_ptr<QGridLayout> layOneUser = std::make_unique<QGridLayout>();
     std::unique_ptr<QFrame> frLayWithData = std::make_unique<QFrame>();
 
     QDate currentDay = QDate::currentDate();
@@ -122,9 +122,15 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
     userNameFont.setBold(true);
     lblUserName->setFont(userNameFont);
 
-    // Add to form
-    layOneUser->addWidget(lblUserName.release());
-    layOneUser->addWidget(lblUserDate.release());
+    //delete button
+    std::unique_ptr<QPushButton> deleteButton = std::make_unique<QPushButton>();
+    deleteButton->setText("Delete");
+    deleteButton->setStyleSheet("background-color: red;");
+
+    //add to form
+    layOneUser->addWidget(lblUserName.release(), 0, 0);
+    layOneUser->addWidget(deleteButton.release(), 0, 1);
+    layOneUser->addWidget(lblUserDate.release(), 1, 0);
 
     frLayWithData->setLayout(layOneUser.release());
     ui->laForData->addWidget(frLayWithData.release());
