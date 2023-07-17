@@ -14,6 +14,7 @@
 #include <QVector>
 #include <QPixmap>
 #include <QSystemTrayIcon>
+#include <QTimer>
 
 
 QT_BEGIN_NAMESPACE
@@ -35,6 +36,9 @@ private:
     void read_from_json(const QString& file_name_to_read);
     void generate_label(const QString& dateUser, const QString& nameUser);
     void sort_json_data(QJsonArray& jarrToSort);
+    void check_date();
+    QString check_birthday_friends(const QDate& dateNow);
+    void send_notification(const QString& message);
 
 private slots:
     void on_btnAddPeople_clicked();
@@ -45,5 +49,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon* traySysIcon;
+
 };
 #endif // MAINWINDOW_H

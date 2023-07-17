@@ -11,13 +11,14 @@ MainWindow::MainWindow(QWidget *parent)
     traySysIcon->setIcon(QIcon(":/graphics/birthday-cake.ico"));
     traySysIcon->setVisible(true);
 
+    check_date();
+
     // Set linear gradient for background
     this->setStyleSheet("background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(240, 240, 240, 0.79), stop:1 rgba(240, 240, 240, 1));");
     ui->laForData->setAlignment(Qt::AlignTop);
 
     ui->datInput->setDate(QDate::currentDate());
     ui->frMessageOpen->hide();
-
 
     read_from_json(file_name);
 }
@@ -52,7 +53,6 @@ void MainWindow::write_to_json(const QString& file_name_to_write)
     record_object.insert("Name", QJsonValue::fromVariant(event_name));
     record_object.insert("Date", QJsonValue::fromVariant(event_date));
 
-
     // Sort array
     QJsonArray jarrToSort =  doc.array();
     jarrToSort.append(record_object);
@@ -82,23 +82,87 @@ void MainWindow::sort_json_data(QJsonArray &jarrToSort)
     // Bubble sort for dates
     for (int i = 0; i < datesVec.size() - 1; ++i)
     {
-        if(datesVec[i] > datesVec[i+1])
+        if(datesVec[i] > datesVec[i + 1])
         {
             temp = jarrToSort[i];
-            jarrToSort[i] = jarrToSort[i+1];
-            jarrToSort[i+1] = temp;
-            std::swap(datesVec[i],datesVec[i+1]);
+            jarrToSort[i] = jarrToSort[i + 1];
+            jarrToSort[i + 1] = temp;
+            std::swap(datesVec[i],datesVec[i + 1]);
             i -= i == 0 ? 1 : 2;
             continue;
         }
     }
 }
 
+void MainWindow::check_date()
+{
+    int delay = 360000;
+    QDate* lastSavedDate = new QDate(QDate::currentDate());
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this, lastSavedDate, &delay](){
+        if (lastSavedDate->daysTo(QDate::currentDate()) != 0) {
+            *lastSavedDate = QDate::currentDate();
+            if (delay == 3600000)
+            {
+                delay = 8640000;
+            }
+            read_from_json(file_name);
+            send_notification(check_birthday_friends(*lastSavedDate));
+            //qInfo() << "LastSavedDay: " << lastSavedDate->toString();
+        }
+    });
+    timer->start(1000);
+}
+
+QString MainWindow::check_birthday_friends(const QDate& dateNow)
+{
+    QFile file(file_name);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+
+    QString readInfo = file.readAll();  // Get all data from JSON file
+    file.close();  // Closing file
+
+    QJsonArray jArr = QJsonDocument::fromJson(readInfo.toUtf8()).array();  // Convert data to UTF-8
+
+    QJsonObject obj;
+    QString dateString;
+    QDate dateFromJson;
+    QString peopleName;
+
+    int counter = 0;
+    for (int i = 0; i < jArr.size(); ++i)
+    {
+        obj = jArr[i].toObject();
+        dateString = obj.value("Date").toString();
+        dateFromJson = QDate::fromString(dateString, "yyyy-MM-dd");
+        //qInfo() << jArr[i].toObject().value("Date").toString() << "\t" << dateNow.toString();
+        if (dateFromJson.isValid() && dateFromJson == dateNow)
+        {
+            peopleName += obj.value("Name").toString() + "\n";
+            ++counter;
+        }
+    }
+
+    if (counter == 1) peopleName += " - wish your friend!";
+    else peopleName += " - wish your friends!";
+
+    return peopleName;
+}
+
+void MainWindow::send_notification(const QString &message)
+{
+    if (!message.isEmpty())
+        traySysIcon->showMessage("Wish your friends a happy birthday!",
+                                 message,
+                                 QSystemTrayIcon::Information,
+                                 5000);
+}
+
 
 void MainWindow::read_from_json(const QString& file_name_to_read)
 {
     QLayoutItem* wItem;
-    while ((wItem = ui->laForData->takeAt(0)) != 0) delete wItem;
+    while ((wItem = ui->laForData->takeAt(0)) != 0) wItem->widget()->deleteLater();
 
     QFile jsonFileToRead(file_name_to_read);
     jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
@@ -163,11 +227,6 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 void MainWindow::on_btnAddPeople_clicked()
 {
     ui->frMessageOpen->show();  // Showing our form
-
-    traySysIcon->showMessage("For your info",
-                             "Show message!",
-                             QSystemTrayIcon::Information,
-                             5000);
 }
 
 
