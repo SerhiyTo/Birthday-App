@@ -3,15 +3,21 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    traySysIcon = new QSystemTrayIcon(this);
+    traySysIcon->setIcon(QIcon(":/graphics/birthday-cake.ico"));
+    traySysIcon->setVisible(true);
 
     // Set linear gradient for background
     this->setStyleSheet("background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 rgba(240, 240, 240, 0.79), stop:1 rgba(240, 240, 240, 1));");
+    ui->laForData->setAlignment(Qt::AlignTop);
 
     ui->datInput->setDate(QDate::currentDate());
     ui->frMessageOpen->hide();
+
 
     read_from_json(file_name);
 }
@@ -20,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete traySysIcon;
 }
 
 
@@ -73,7 +80,7 @@ void MainWindow::sort_json_data(QJsonArray &jarrToSort)
     }
 
     // Bubble sort for dates
-    for (int i = 0; i < datesVec.size() - 1; i++)
+    for (int i = 0; i < datesVec.size() - 1; ++i)
     {
         if(datesVec[i] > datesVec[i+1])
         {
@@ -156,6 +163,11 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 void MainWindow::on_btnAddPeople_clicked()
 {
     ui->frMessageOpen->show();  // Showing our form
+
+    traySysIcon->showMessage("For your info",
+                             "Show message!",
+                             QSystemTrayIcon::Information,
+                             5000);
 }
 
 

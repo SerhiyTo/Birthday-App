@@ -13,7 +13,7 @@
 #include <QFrame>
 #include <QVector>
 #include <QPixmap>
-#include <QSignalMapper>
+#include <QSystemTrayIcon>
 
 
 QT_BEGIN_NAMESPACE
@@ -44,5 +44,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QSystemTrayIcon* traySysIcon;
 };
 #endif // MAINWINDOW_H
