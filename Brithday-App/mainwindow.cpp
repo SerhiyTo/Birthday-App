@@ -20,8 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->datInput->setDate(QDate::currentDate());
     ui->frMessageOpen->hide();
 
-    //JSON_work::read_from_json();
-    // read_from_json(file_name);
+    generate_birthday_widgets();
 }
 
 
@@ -45,6 +44,7 @@ void MainWindow::check_date()
                 delay = 8640000;
             }
             //read_from_json(file_name);
+            generate_birthday_widgets();
             send_notification(check_birthday_friends(*lastSavedDate));
             //qInfo() << "LastSavedDay: " << lastSavedDate->toString();
         }
@@ -54,14 +54,6 @@ void MainWindow::check_date()
 
 QString MainWindow::check_birthday_friends(const QDate& dateNow)
 {
-//    QFile file(file_name);
-//    file.open(QIODevice::ReadOnly | QIODevice::Text);
-
-//    QString readInfo = file.readAll();  // Get all data from JSON file
-//    file.close();  // Closing file
-
-//    QJsonArray jArr = QJsonDocument::fromJson(readInfo.toUtf8()).array();  // Convert data to UTF-8
-
     QJsonArray jArr = jsonWork.get_json_array();
     QJsonObject obj;
     QString dateString;
@@ -182,5 +174,5 @@ void MainWindow::on_btnOk_clicked()
     ui->datInput->setDate(QDate::currentDate());  // Set current date by deffault in our QDate
     ui->frMessageOpen->hide();  // Hide the form
 
-    generate_birthday_widgets();
+    // generate_birthday_widgets();
 }
