@@ -20,7 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->datInput->setDate(QDate::currentDate());
     ui->frMessageOpen->hide();
 
-    read_from_json(file_name);
+    //JSON_work::read_from_json();
+    // read_from_json(file_name);
 }
 
 
@@ -30,69 +31,6 @@ MainWindow::~MainWindow()
     delete traySysIcon;
 }
 
-
-void MainWindow::write_to_json(const QString& file_name_to_write)
-{
-    // Get info
-    QString event_name = ui->lnNameInput->text();
-    QDate event_date = ui->datInput->date();
-
-    // Read existing JSON file
-    QFile json_file(file_name_to_write);
-    QJsonDocument doc = QJsonDocument::fromJson("[]");
-
-    if (json_file.exists() && json_file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QByteArray jsonData = json_file.readAll();
-        doc = QJsonDocument::fromJson(jsonData);
-        json_file.close();
-    }
-
-    // Create new JSON object
-    QJsonObject record_object;
-    record_object.insert("Name", QJsonValue::fromVariant(event_name));
-    record_object.insert("Date", QJsonValue::fromVariant(event_date));
-
-    // Sort array
-    QJsonArray jarrToSort =  doc.array();
-    jarrToSort.append(record_object);
-
-    sort_json_data(jarrToSort);
-
-    // Write the updated JSON array to the file
-    json_file.open(QIODevice::WriteOnly | QIODevice::Text);
-    json_file.write(QJsonDocument(jarrToSort).toJson());
-    json_file.close();
-
-    read_from_json(file_name_to_write);
-}
-
-
-void MainWindow::sort_json_data(QJsonArray &jarrToSort)
-{
-    QVector<QDate> datesVec;
-    QJsonValue temp;
-
-    // Сreate vector for dates
-    for (int i = 0; i < jarrToSort.size(); i++)
-    {
-        datesVec.append(QDate::fromString(jarrToSort[i].toObject()["Date"].toString(), "yyyy-MM-dd"));
-    }
-
-    // Bubble sort for dates
-    for (int i = 0; i < datesVec.size() - 1; ++i)
-    {
-        if(datesVec[i] > datesVec[i + 1])
-        {
-            temp = jarrToSort[i];
-            jarrToSort[i] = jarrToSort[i + 1];
-            jarrToSort[i + 1] = temp;
-            std::swap(datesVec[i],datesVec[i + 1]);
-            i -= i == 0 ? 1 : 2;
-            continue;
-        }
-    }
-}
 
 void MainWindow::check_date()
 {
@@ -106,7 +44,7 @@ void MainWindow::check_date()
             {
                 delay = 8640000;
             }
-            read_from_json(file_name);
+            //read_from_json(file_name);
             send_notification(check_birthday_friends(*lastSavedDate));
             //qInfo() << "LastSavedDay: " << lastSavedDate->toString();
         }
@@ -116,14 +54,15 @@ void MainWindow::check_date()
 
 QString MainWindow::check_birthday_friends(const QDate& dateNow)
 {
-    QFile file(file_name);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
+//    QFile file(file_name);
+//    file.open(QIODevice::ReadOnly | QIODevice::Text);
 
-    QString readInfo = file.readAll();  // Get all data from JSON file
-    file.close();  // Closing file
+//    QString readInfo = file.readAll();  // Get all data from JSON file
+//    file.close();  // Closing file
 
-    QJsonArray jArr = QJsonDocument::fromJson(readInfo.toUtf8()).array();  // Convert data to UTF-8
+//    QJsonArray jArr = QJsonDocument::fromJson(readInfo.toUtf8()).array();  // Convert data to UTF-8
 
+    QJsonArray jArr = jsonWork.get_json_array();
     QJsonObject obj;
     QString dateString;
     QDate dateFromJson;
@@ -159,20 +98,12 @@ void MainWindow::send_notification(const QString &message)
 }
 
 
-void MainWindow::read_from_json(const QString& file_name_to_read)
+void MainWindow::generate_birthday_widgets()
 {
     QLayoutItem* wItem;
     while ((wItem = ui->laForData->takeAt(0)) != 0) wItem->widget()->deleteLater();
 
-    QFile jsonFileToRead(file_name_to_read);
-    jsonFileToRead.open(QIODevice::ReadOnly | QIODevice::Text);  // Opening JSON file for reading data from it
-    if (!jsonFileToRead.isOpen()) return;
-
-    QString readInfo = jsonFileToRead.readAll();  // Get all data from JSON file
-    jsonFileToRead.close();  // Closing file
-
-    QJsonDocument doc = QJsonDocument::fromJson(readInfo.toUtf8());  // Convert data to UTF-8
-    QJsonArray jArr = doc.array();  // Casting our data from json to array
+    QJsonArray jArr = jsonWork.get_json_array();
 
     QString dateUser, nameUser;  // Creating variable for using its in loop
     for (auto jsonObj : jArr)
@@ -212,7 +143,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
     deleteButton->setText("Delete");
     deleteButton->setStyleSheet("background-color: red;");
 
-    connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() { delete_from_json(dateUser, nameUser); });
+    connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() { jsonWork.delete_from_json(nameUser, dateUser); });
 
     // Add to form
     layOneUser->addWidget(lblUserName.release(), 0, 0);
@@ -226,7 +157,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 
 void MainWindow::on_btnAddPeople_clicked()
 {
-    ui->frMessageOpen->show();  // Showing our form
+    ui->frMessageOpen->show();  // Showing our form    
 }
 
 
@@ -240,40 +171,16 @@ void MainWindow::on_btnCancel_clicked()
 
 void MainWindow::on_btnOk_clicked()
 {
-    write_to_json(file_name);
+    // Get info
+    QString event_name = ui->lnNameInput->text();
+    QDate event_date = ui->datInput->date();
+    jsonWork.write_to_json(event_name, event_date);
 
     QMessageBox::information(this, "People was added!", "Adding people to databasw was sucessed");
 
     ui->lnNameInput->clear();  // Clear the form
     ui->datInput->setDate(QDate::currentDate());  // Set current date by deffault in our QDate
     ui->frMessageOpen->hide();  // Hide the form
-}
 
-
-void MainWindow::delete_from_json(const QString& dateUser, const QString& nameUser)
-{
-    QFile file(file_name);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    if (!file.isOpen()) return;
-
-    QString readInfo = file.readAll();  // Get all data from JSON file
-    file.close();  // Closing file
-
-    QJsonArray jArr = QJsonDocument::fromJson(readInfo.toUtf8()).array();  // Convert data to UTF-8
-
-    for (int i = 0; i < jArr.size(); ++i)
-    {
-        if (jArr[i].toObject().value("Date").toString() == dateUser &&
-            jArr[i].toObject().value("Name").toString() == nameUser)
-        {
-            jArr.removeAt(i);
-            break;
-        }
-    }
-
-    file.open(QIODevice::WriteOnly);
-    file.write(QJsonDocument(jArr).toJson());
-    file.close();
-
-    read_from_json(file_name);
+    generate_birthday_widgets();
 }
