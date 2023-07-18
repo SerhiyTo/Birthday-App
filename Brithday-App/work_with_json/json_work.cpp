@@ -25,6 +25,11 @@ void JSON_work::write_to_json(const QString& event_name, const QDate& event_date
         doc = QJsonDocument::fromJson(jsonData);
         json_file.close();
     }
+    else
+    {
+        qInfo()<<"write_to_json: file '"<<file_name<<"' is not alredy created";
+    }
+
 
     // Create new JSON object
     QJsonObject record_object;
