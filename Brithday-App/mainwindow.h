@@ -3,11 +3,6 @@
 
 #include <QMainWindow>
 
-#include <QJsonObject>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QFile>
-
 #include <QMessageBox>
 #include <QLabel>
 #include <QFrame>
@@ -15,6 +10,8 @@
 #include <QPixmap>
 #include <QSystemTrayIcon>
 #include <QTimer>
+
+#include "work_with_json/json_work.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -29,13 +26,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    const QString file_name = "./EventList.json";
-
 private:
-    void write_to_json(const QString& file_name_to_write);
-    void read_from_json(const QString& file_name_to_read);
     void generate_label(const QString& dateUser, const QString& nameUser);
-    void sort_json_data(QJsonArray& jarrToSort);
+    void generate_birthday_widgets();
+
     void check_date();
     QString check_birthday_friends(const QDate& dateNow);
     void send_notification(const QString& message);
@@ -44,11 +38,11 @@ private slots:
     void on_btnAddPeople_clicked();
     void on_btnCancel_clicked();
     void on_btnOk_clicked();
-    void delete_from_json(const QString& dateUser, const QString& nameUser);
 
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon* traySysIcon;
+    JSON_work jsonWork;
 
 };
 #endif // MAINWINDOW_H
