@@ -27,7 +27,10 @@ void JSON_work::write_to_json(const QString& event_name, const QDate& event_date
     }
     else
     {
-        qInfo()<<"write_to_json: file '"<<file_name<<"' is not alredy created";
+        json_file.close();
+        qInfo() << "write_to_json: file '" << file_name << "' is not alredy created";
+        json_file.open(QIODevice::WriteOnly | QIODevice::Text);
+        json_file.close();
     }
 
 

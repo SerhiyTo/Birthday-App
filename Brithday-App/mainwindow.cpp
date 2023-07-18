@@ -18,10 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->datInput->setDate(QDate::currentDate());
     ui->frMessageOpen->hide();
 
-<<<<<<< HEAD
-=======
     check_date();
->>>>>>> 34a9e1b411cb1a43818a2ac1148c524a0c0035b6
     generate_birthday_widgets();
 }
 
@@ -46,16 +43,12 @@ void MainWindow::check_date()
             {
                 delay = 8640000;
             }
-<<<<<<< HEAD
-            //read_from_json(file_name);
-=======
             */
->>>>>>> 34a9e1b411cb1a43818a2ac1148c524a0c0035b6
             generate_birthday_widgets();
             send_notification(check_birthday_friends(*lastSavedDate));
         }
     });
-    timer->start(delay);
+    timer->start(1000);
 }
 
 QString MainWindow::check_birthday_friends(const QDate& dateNow)
@@ -79,7 +72,8 @@ QString MainWindow::check_birthday_friends(const QDate& dateNow)
         }
     }
 
-    if (counter == 1) peopleName += " - wish your friend!";
+    if (counter == 0) peopleName = "";
+    else if (counter == 1) peopleName += " - wish your friend!";
     else peopleName += " - wish your friends!";
 
     return peopleName;
@@ -88,10 +82,12 @@ QString MainWindow::check_birthday_friends(const QDate& dateNow)
 void MainWindow::send_notification(const QString &message)
 {
     if (!message.isEmpty())
+    {
         traySysIcon->showMessage("Wish your friends a happy birthday!",
                                  message,
                                  QSystemTrayIcon::Information,
                                  5000);
+    }
 }
 
 
@@ -182,5 +178,5 @@ void MainWindow::on_btnOk_clicked()
     //return to default
     on_btnCancel_clicked();
 
-    // generate_birthday_widgets();
+    generate_birthday_widgets();
 }
