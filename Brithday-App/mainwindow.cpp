@@ -48,7 +48,7 @@ void MainWindow::check_date()
             send_notification(check_birthday_friends(*lastSavedDate));
         }
     });
-    timer->start(1000);
+    timer->start(delay);
 }
 
 QString MainWindow::check_birthday_friends(const QDate& dateNow)
