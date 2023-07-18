@@ -19,7 +19,7 @@ public:
     QJsonArray get_json_array();
     void delete_from_json(const QString& nameUser, const QString& dateUser);
 
-    const QString file_name;
+    const QString file_name = "./EventList.json";
 
 signals:
 
