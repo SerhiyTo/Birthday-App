@@ -56,16 +56,30 @@ void JSON_work::sort_json_data(QJsonArray &jarrToSort)
     QVector<QDate> datesVec;
     QJsonValue temp;
 
+    QString dateString;
+    QDate dateFromJson;
+
+    QJsonObject record_object;
+
     // Сreate vector for dates
-    for (int i = 0; i < jarrToSort.size(); i++)
+    for (int i = 0; i < jarrToSort.size(); ++i)
     {
-        datesVec.append(QDate::fromString(jarrToSort[i].toObject()["Date"].toString(), "yyyy-MM-dd"));
+        record_object = jarrToSort[i].toObject();
+        dateString = jarrToSort[i].toObject().value("Date").toString();
+        dateFromJson = QDate::fromString(dateString, "yyyy-MM-dd");
+        if (dateFromJson.year() < QDate::currentDate().year())
+        {
+            dateFromJson = dateFromJson.addYears(QDate::currentDate().year() - dateFromJson.year() + 1);
+        }
+        datesVec.append(dateFromJson);
+        record_object.insert("Date", QJsonValue::fromVariant(dateFromJson));
+        jarrToSort.replace(i, record_object);
     }
 
     // Bubble sort for dates
     for (int i = 0; i < datesVec.size() - 1; ++i)
     {
-        if(datesVec[i] > datesVec[i + 1])
+        if (datesVec[i] > datesVec[i + 1])
         {
             temp = jarrToSort[i];
             jarrToSort[i] = jarrToSort[i + 1];

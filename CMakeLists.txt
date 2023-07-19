@@ -17,8 +17,6 @@ set(PROJECT_SOURCES
         Brithday-App/mainwindow.cpp
         Brithday-App/mainwindow.h
         Brithday-App/mainwindow.ui
-        Brithday-App/push_notification/pushnotification.cpp
-        Brithday-App/push_notification/pushnotification.h
         Brithday-App/resources.qrc
         Brithday-App/work_with_json/json_work.cpp
         Brithday-App/work_with_json/json_work.h

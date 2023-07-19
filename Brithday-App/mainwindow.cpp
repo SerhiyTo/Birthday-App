@@ -117,7 +117,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 
     QDate currentDay = QDate::currentDate();
     QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
-    if (currentDay.daysTo(dateFromString) < 0) return;//dont add past events
+    if (currentDay.daysTo(dateFromString) < 0) return; //dont add past events
 
     QString formattedDate = dateFromString.toString("dd.MM");  // Format date
     QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
