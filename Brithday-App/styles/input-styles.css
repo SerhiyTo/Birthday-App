@@ -1,0 +1,24 @@
+QFrame#frBackgroundMessage {
+    background-color: rgba(0, 0, 0, 30%);
+}
+
+QFrame#frMessageOpen {
+    background-color: rgb(255, 255, 255);
+    border-radius: 7px;
+}
+
+QPushButton {
+    background-color: rgb(0,0,0);
+    color: white;
+    border-radius: 8px;
+    font: bold 12px;
+}
+
+QPushButton:hover {
+    color: black;
+    background-color: rgb(217,217,217);
+}
+
+QLabel#lblAddingPeople {
+    font: bold 14px;
+}

@@ -1,0 +1,20 @@
+MainWindow {
+    position: absolute;
+    width: 520px;
+    height: 640px;
+    left: 0px;
+    top: 0px;
+    background: linear-gradient(328.28deg, rgba(240, 240, 240, 0.21) 0%, #F3F3F3 100%);
+}
+
+QPushButton#btnAddPeople {
+    background-color: rgb(0,0,0);
+    color: white;
+    border-radius: 20px;
+    font: bold 14px;
+}
+
+QPushButton#btnAddPeople:hover {
+    color: black;
+    background-color: rgb(217,217,217);
+}

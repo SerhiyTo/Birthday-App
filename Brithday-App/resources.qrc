@@ -3,5 +3,8 @@
         <file>graphics/bird.png</file>
         <file>graphics/resources.qrc</file>
         <file>graphics/birthday-cake.ico</file>
+        <file>styles/main-styles.css</file>
+        <file>styles/list-styles.css</file>
+        <file>styles/input-styles.css</file>
     </qresource>
 </RCC>
