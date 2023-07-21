@@ -18,7 +18,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->laForData->setAlignment(Qt::AlignTop);
 
     ui->datInput->setDate(QDate::currentDate());
-    // ui->frMessageOpen->hide();
     ui->frBackgroundMessage->hide();
 
     check_date();
@@ -70,8 +69,8 @@ QString MainWindow::check_birthday_friends(const QDate& dateNow)
     }
 
     if (counter == 0) peopleName = "";
-    else if (counter == 1) peopleName += " - wish your friend!";
-    else peopleName += " - wish your friends!";
+    else if (counter == 1) peopleName.push_front("Wish your friend - ");
+    else peopleName.push_front("Wish your friends - ");
 
     return peopleName;
 }
@@ -155,8 +154,6 @@ void MainWindow::on_btnAddPeople_clicked()
 {
     QFile file(":/styles/input-styles.css");
     file.open(QFile::ReadOnly);
-    //ui->frMessageInput->show();
-    //ui->frMessageOpen->show();
     ui->frBackgroundMessage->show();  // Showing message box
     ui->frBackgroundMessage->setStyleSheet(file.readAll());
 }
