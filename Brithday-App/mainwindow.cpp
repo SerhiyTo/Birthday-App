@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     check_date();
     generate_birthday_widgets();
+
+    connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
 }
 
 
@@ -83,6 +85,34 @@ void MainWindow::send_notification(const QString &message)
                                  message,
                                  QSystemTrayIcon::Information,
                                  5000);
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (isWindowVisiable)
+    {
+        event->ignore();  // ignore closing the app
+        hide();  // hide our main widget
+        traySysIcon->show();
+        isWindowVisiable = true;
+    }
+    else event->accept();  // close the app if window is not visiable
+}
+
+void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    if (reason == QSystemTrayIcon::Context)  // if our request was right click (request == calling context menu)
+    {
+        QMenu* traySysMenu = new QMenu(this);  // we create new menu
+        QAction* exitAction = traySysMenu->addAction("Exit");  // create new action for closing the app
+        connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);  // connect it
+        traySysMenu->popup(traySysIcon->geometry().center());
+    }
+    else if (reason == QSystemTrayIcon::Trigger) // if our request was left clicked (request == system tray entry)
+    {
+        show();  // show our application (Main Window)
+        isWindowVisiable = true;  // change boolean variable for control visiable
     }
 }
 

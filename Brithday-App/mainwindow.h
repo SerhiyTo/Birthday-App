@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QCloseEvent>
 
 #include <QMessageBox>
 #include <QLabel>
@@ -10,6 +11,7 @@
 #include <QPixmap>
 #include <QSystemTrayIcon>
 #include <QTimer>
+#include <QMenu>
 
 #include "work_with_json/json_work.h"
 
@@ -27,12 +29,17 @@ public:
     ~MainWindow();
 
 private:
+    bool isWindowVisiable = true;
+
     void generate_label(const QString& dateUser, const QString& nameUser);
     void generate_birthday_widgets();
 
     void check_date();
     QString check_birthday_friends(const QDate& dateNow);
     void send_notification(const QString& message);
+
+    void closeEvent(QCloseEvent* event);  // overload function for closing app
+    void trayActivated(QSystemTrayIcon::ActivationReason reason);  // function for activated tray system
 
 private slots:
     void on_btnAddPeople_clicked();
