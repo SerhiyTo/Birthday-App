@@ -6,7 +6,9 @@ When someone from your friends list has a birthday, you will definitely receive 
 ## Installation
 1. First, You need to clone the repository using this command:
    
-   `$ git clone https://github.com/SerhiyTo/Birthday-App.git`
+   ```bash
+      $ git clone https://github.com/SerhiyTo/Birthday-App.git
+   ```
    
 3. Next, you must build the project into a release version.  
 
@@ -14,6 +16,6 @@ When someone from your friends list has a birthday, you will definitely receive 
    
 5. Next, open our MinGW Qt and write the following:
    
-      `windeployqt --quick . `
+      ```windeployqt --quick . ```
 
 6. Congratulations! Now you can use the application to the fullest! 🎉
