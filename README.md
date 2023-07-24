@@ -16,6 +16,8 @@ When someone from your friends list has a birthday, you will definitely receive 
    
 5. Next, open our MinGW Qt and write the following:
    
-      ```windeployqt --quick . ```
+      ```bash
+      windeployqt --quick .
+      ```
 
-6. Congratulations! Now you can use the application to the fullest! 🎉
+7. Congratulations! Now you can use the application to the fullest! 🎉
