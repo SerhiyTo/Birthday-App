@@ -67,7 +67,7 @@ void JSON_work::sort_json_data(QJsonArray &jarrToSort)
         record_object = jarrToSort[i].toObject();
         dateString = jarrToSort[i].toObject().value("Date").toString();
         dateFromJson = QDate::fromString(dateString, "yyyy-MM-dd");
-        if (dateFromJson.year() < QDate::currentDate().year())
+        if (QDate::currentDate().daysTo(dateFromJson)<0)
         {
             dateFromJson = dateFromJson.addYears(QDate::currentDate().year() - dateFromJson.year() + 1);
         }
