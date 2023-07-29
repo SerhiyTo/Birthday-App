@@ -29,26 +29,24 @@ public:
     ~MainWindow();
 
 private:
-    bool isWindowVisiable = true;
+    void generateLabel(const QString& dateUser, const QString& nameUser);
+    void generateBirthdayWidgets();
 
-    void generate_label(const QString& dateUser, const QString& nameUser);
-    void generate_birthday_widgets();
-
-    void check_date();
-    QString check_birthday_friends(const QDate& dateNow);
-    void send_notification(const QString& message);
+    void checkDate();
+    QString checkBirthdayFriends(const QDate& dateNow);
+    void sendNotification(const QString& message);
 
     void closeEvent(QCloseEvent* event);  // overload function for closing app
     void trayActivated(QSystemTrayIcon::ActivationReason reason);  // function for activated tray system
 
 private slots:
-    void on_btnAddPeople_clicked();
-    void on_btnCancel_clicked();
-    void on_btnOk_clicked();
+    void onAddClicked();
+    void onCancelClicked();
+    void onOkClicked();
 
 private:
     Ui::MainWindow *ui;
-    QSystemTrayIcon* traySysIcon;
+    QSystemTrayIcon *traySysIcon;
     JSON_work jsonWork;
 
 };

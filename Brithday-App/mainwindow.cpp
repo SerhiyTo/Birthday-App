@@ -20,10 +20,14 @@ MainWindow::MainWindow(QWidget *parent)
     ui->datInput->setDate(QDate::currentDate());
     ui->frBackgroundMessage->hide();
 
-    check_date();
-    generate_birthday_widgets();
+    checkDate();
+    generateBirthdayWidgets();
 
+    // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
+    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
+    connect(ui->btnCancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
+    connect(ui->btnOk, &QPushButton::clicked, this, &MainWindow::onOkClicked);
 }
 
 
@@ -34,22 +38,22 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::check_date()
+void MainWindow::checkDate()
 {
     int delay = 360000;
-    QDate* lastSavedDate = new QDate(QDate::currentDate());
+    QDate lastSavedDate = QDate::currentDate();
     QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this, lastSavedDate, &delay](){
-        if (lastSavedDate->daysTo(QDate::currentDate()) != 0) {
-            *lastSavedDate = QDate::currentDate();
-            generate_birthday_widgets();
-            send_notification(check_birthday_friends(*lastSavedDate));
+    connect(timer, &QTimer::timeout, this, [this, &lastSavedDate](){
+        if (lastSavedDate.daysTo(QDate::currentDate()) != 0) {
+            lastSavedDate = QDate::currentDate();
+            generateBirthdayWidgets();
+            sendNotification(checkBirthdayFriends(lastSavedDate));
         }
     });
     timer->start(delay);
 }
 
-QString MainWindow::check_birthday_friends(const QDate& dateNow)
+QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
 {
     QJsonArray jArr = jsonWork.get_json_array();
     QJsonObject obj;
@@ -58,14 +62,15 @@ QString MainWindow::check_birthday_friends(const QDate& dateNow)
     QString peopleName;
 
     int counter = 0;
-    for (int i = 0; i < jArr.size(); ++i)
+    for (const QJsonValue& value : jArr)
     {
-        obj = jArr[i].toObject();
+        obj = value.toObject();
         dateString = obj.value("Date").toString();
         dateFromJson = QDate::fromString(dateString, "yyyy-MM-dd");
+
         if (dateFromJson.isValid() && dateFromJson == dateNow)
         {
-            peopleName += obj.value("Name").toString() + "\n";
+            peopleName += obj.value("Name").toString() + '\n';
             ++counter;
         }
     }
@@ -77,7 +82,7 @@ QString MainWindow::check_birthday_friends(const QDate& dateNow)
     return peopleName;
 }
 
-void MainWindow::send_notification(const QString &message)
+void MainWindow::sendNotification(const QString &message)
 {
     if (!message.isEmpty())
     {
@@ -90,34 +95,32 @@ void MainWindow::send_notification(const QString &message)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (isWindowVisiable)
+    if (isVisible())
     {
-        event->ignore();  // ignore closing the app
-        hide();  // hide our main widget
+        event->ignore();  // Ignore closing the app
+        hide();  // Hide our main widget
         traySysIcon->show();
-        isWindowVisiable = true;
     }
-    else event->accept();  // close the app if window is not visiable
+    else event->accept();  // Close the app if window is not visiable
 }
 
 void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    if (reason == QSystemTrayIcon::Context)  // if our request was right click (request == calling context menu)
+    if (reason == QSystemTrayIcon::Context)  // If our request was right click (request == calling context menu)
     {
-        QMenu* traySysMenu = new QMenu(this);  // we create new menu
-        QAction* exitAction = traySysMenu->addAction("Exit");  // create new action for closing the app
-        connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);  // connect it
+        QMenu* traySysMenu = new QMenu(this);  // We create new menu
+        QAction* exitAction = traySysMenu->addAction("Exit");  // Create new action for closing the app
+        connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);  // Connect it
         traySysMenu->popup(traySysIcon->geometry().center());
     }
-    else if (reason == QSystemTrayIcon::Trigger) // if our request was left clicked (request == system tray entry)
+    else if (reason == QSystemTrayIcon::Trigger) // If our request was left clicked (request == system tray entry)
     {
-        show();  // show our application (Main Window)
-        isWindowVisiable = true;  // change boolean variable for control visiable
+        show();  // Show our application (Main Window)
     }
 }
 
 
-void MainWindow::generate_birthday_widgets()
+void MainWindow::generateBirthdayWidgets()
 {
     // Delete existing tabs
     QLayoutItem* wItem;
@@ -125,16 +128,18 @@ void MainWindow::generate_birthday_widgets()
 
     QJsonArray jArr = jsonWork.get_json_array();
     QString dateUser, nameUser;  // Creating variable for using its in loop
-    for (auto jsonObj : jArr)
+
+    for (const QJsonValue &value : jArr)
     {
-        dateUser = jsonObj.toObject().value("Date").toString();  // Get data from JSON with key parametr "Date"
-        nameUser = jsonObj.toObject().value("Name").toString();  // Get data from JSON with key parametr "Name"
-        generate_label(dateUser, nameUser);  // Calling function "generate label" for display current data in label
+        QJsonObject jsonObj = value.toObject();
+        dateUser = jsonObj.value("Date").toString();  // Get data from JSON with key parametr "Date"
+        nameUser = jsonObj.value("Name").toString();  // Get data from JSON with key parametr "Name"
+        generateLabel(dateUser, nameUser);  // Calling function "generate label" for display current data in label
     }
 }
 
 
-void MainWindow::generate_label(const QString& dateUser, const QString& nameUser)
+void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
 {
     if (ui->laForData->count() >= 6) return; // Don't add new tabs, if count >=x
 
@@ -143,7 +148,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 
     QDate currentDay = QDate::currentDate();
     QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
-    if (currentDay.daysTo(dateFromString) < 0) return; //dont add past events
+    if (currentDay.daysTo(dateFromString) < 0) return; // Don't add past events
 
     QString formattedDate = dateFromString.toString("dd.MM");  // Format date
     QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
@@ -167,7 +172,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 
     connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() {
         jsonWork.delete_from_json(nameUser, dateUser);
-        generate_birthday_widgets();
+        generateBirthdayWidgets();
     });
 
     // Add to form
@@ -180,7 +185,7 @@ void MainWindow::generate_label(const QString& dateUser, const QString& nameUser
 }
 
 
-void MainWindow::on_btnAddPeople_clicked()
+void MainWindow::onAddClicked()
 {
     QFile file(":/styles/input-styles.css");
     file.open(QFile::ReadOnly);
@@ -189,7 +194,7 @@ void MainWindow::on_btnAddPeople_clicked()
 }
 
 
-void MainWindow::on_btnCancel_clicked()
+void MainWindow::onCancelClicked()
 {
     // Clear text boxes and close tab
     ui->lnNameInput->clear();
@@ -198,7 +203,7 @@ void MainWindow::on_btnCancel_clicked()
 }
 
 
-void MainWindow::on_btnOk_clicked()
+void MainWindow::onOkClicked()
 {
     // Get info
     QString event_name = ui->lnNameInput->text();
@@ -208,7 +213,7 @@ void MainWindow::on_btnOk_clicked()
     QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
 
     // Return to default
-    on_btnCancel_clicked();
+    onCancelClicked();
 
-    generate_birthday_widgets();
+    generateBirthdayWidgets();
 }
