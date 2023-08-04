@@ -19,6 +19,11 @@ QPushButton:hover {
     background-color: rgb(217,217,217);
 }
 
+QPushButton:disabled {
+    color: white;
+    background-color: rgb(128,128,128);
+}
+
 QLabel#lblAddingPeople {
     font: bold 14px;
 }

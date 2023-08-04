@@ -39,6 +39,8 @@ private:
     void closeEvent(QCloseEvent* event);  // overload function for closing app
     void trayActivated(QSystemTrayIcon::ActivationReason reason);  // function for activated tray system
 
+    void updateOkButtonState(const QString& nameInput);
+
 private slots:
     void onAddClicked();
     void onCancelClicked();

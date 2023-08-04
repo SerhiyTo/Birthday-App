@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
     connect(ui->btnCancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
     connect(ui->btnOk, &QPushButton::clicked, this, &MainWindow::onOkClicked);
+
+    connect(ui->lnNameInput, &QLineEdit::textChanged, this, &MainWindow::updateOkButtonState);
 }
 
 
@@ -117,6 +119,11 @@ void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
     {
         show();  // Show our application (Main Window)
     }
+}
+
+void MainWindow::updateOkButtonState(const QString &nameInput)
+{
+    ui->btnOk->setEnabled(!nameInput.isEmpty());
 }
 
 
