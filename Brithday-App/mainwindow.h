@@ -14,7 +14,7 @@
 #include <QMenu>
 
 #include "work_with_json/json_work.h"
-#include "stylehelper.h"
+
 
 
 QT_BEGIN_NAMESPACE

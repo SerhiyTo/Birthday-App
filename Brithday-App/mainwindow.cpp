@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "stylehelper.h"
+#include "work_with_json/jsonfilemanager.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -62,7 +64,7 @@ QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
     QDate dateFromJson;
     QString peopleName;
 
-    int counter = 0;
+    static int counter = 0;
     for (const QJsonValue& value : jArr)
     {
         obj = value.toObject();
@@ -132,7 +134,6 @@ void MainWindow::generateBirthdayWidgets()
     QLayoutItem* wItem;
     while ((wItem = ui->laForData->takeAt(0)) != 0) wItem->widget()->deleteLater();
 
-    //QJsonArray jArr = jsonWork.get_json_array();
     JSONFileManager jsonManager;
     QJsonArray jArr = jsonManager.readFromJsonArray();
     QString dateUser, nameUser;  // Creating variable for using its in loop
@@ -177,7 +178,7 @@ void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
     deleteButton->setStyleSheet(StyleHelper::listStyles());
 
     connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() {
-        jsonWork.delete_from_json(nameUser, dateUser);
+        jsonWork.deleteFromJson(nameUser, dateUser);
         generateBirthdayWidgets();
     });
 
@@ -212,7 +213,7 @@ void MainWindow::onOkClicked()
     // Get info
     QString event_name = ui->lnNameInput->text();
     QDate event_date = ui->datInput->date();
-    jsonWork.write_to_json(event_name, event_date);
+    jsonWork.writeToJson(event_name, event_date);
 
     QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
 

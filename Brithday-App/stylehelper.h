@@ -14,8 +14,6 @@ public:
     static QByteArray inputStyles();  // Function to get styles from input-styles.css
     static QByteArray listStyles();  // Function to get styles from list-styles.css
     static QByteArray mainStyles();  // Function to get styles from main-styles.css
-
-private:
 };
 
 #endif // STYLEHELPER_H

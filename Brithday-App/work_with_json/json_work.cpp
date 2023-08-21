@@ -1,4 +1,5 @@
 #include "json_work.h"
+#include "jsonfilemanager.h"
 
 
 JSONWork::JSONWork(QObject *parent)
@@ -13,7 +14,7 @@ JSONWork::~JSONWork()
 }
 
 
-void JSONWork::write_to_json(const QString& event_name, const QDate& event_date)
+void JSONWork::writeToJson(const QString& event_name, const QDate& event_date)
 {
     JSONFileManager jsonManager(QIODevice::ReadWrite | QIODevice::Text);
     QJsonArray jArrToSort = jsonManager.readFromJsonArray();
@@ -24,20 +25,24 @@ void JSONWork::write_to_json(const QString& event_name, const QDate& event_date)
     recordObject.insert("Date", QJsonValue::fromVariant(event_date));
 
     jArrToSort.append(recordObject);
-    sort_json_data(jArrToSort);
+    sortJsonData(jArrToSort);
 
     jsonManager.writeJsonArray(jArrToSort);
 }
 
+inline void swap(QJsonValueRef v1, QJsonValueRef v2)
+{
+    QJsonValue temp(v1);
+    v1 = QJsonValue(v2);
+    v2 = temp;
+}
 
-void JSONWork::sort_json_data(QJsonArray &jarrToSort)
+void JSONWork::sortJsonData(QJsonArray &jarrToSort)
 {
     QVector<QDate> datesVec;
     QJsonValue temp;
-
     QString dateString;
     QDate dateFromJson;
-
     QJsonObject recordObject;
 
     // Сreate vector for dates
@@ -49,29 +54,22 @@ void JSONWork::sort_json_data(QJsonArray &jarrToSort)
 
         if (QDate::currentDate().daysTo(dateFromJson) < 0)
         {
-            dateFromJson = dateFromJson.addYears(QDate::currentDate().year() - dateFromJson.year() + (QDate::currentDate().month() > dateFromJson.month()));
+            dateFromJson = dateFromJson.addYears(
+                QDate::currentDate().year() - dateFromJson.year() +
+                (QDate::currentDate().month() > dateFromJson.month()
+            ));
         }
         datesVec.append(dateFromJson);
         recordObject.insert("Date", QJsonValue::fromVariant(dateFromJson));
         jarrToSort.replace(i, recordObject);
     }
 
-    // Bubble sort for dates
-    for (int i = 0; i < datesVec.size() - 1; ++i)
-    {
-        if (datesVec[i] > datesVec[i + 1])
-        {
-            temp = jarrToSort[i];
-            jarrToSort[i] = jarrToSort[i + 1];
-            jarrToSort[i + 1] = temp;
-            std::swap(datesVec[i],datesVec[i + 1]);
-            i -= i == 0 ? 1 : 2;
-            continue;
-        }
-    }
+    std::sort(jarrToSort.begin(), jarrToSort.end(), [](const QJsonValue& v1, const QJsonValue& v2){
+        return v1.toObject()["Date"].toString() < v2.toObject()["Date"].toString();
+    });
 }
 
-void JSONWork::delete_from_json(const QString& nameUser, const QString& dateUser)
+void JSONWork::deleteFromJson(const QString& nameUser, const QString& dateUser)
 {
     JSONFileManager jsonManager(QIODevice::ReadWrite | QIODevice::Text);
     QJsonArray jArr = jsonManager.readFromJsonArray();
