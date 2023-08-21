@@ -1,19 +1,19 @@
 #include "json_work.h"
 
 
-JSON_work::JSON_work(QObject *parent)
+JSONWork::JSONWork(QObject *parent)
     : QObject(parent)
 {
 
 }
 
-JSON_work::~JSON_work()
+JSONWork::~JSONWork()
 {
 
 }
 
 
-void JSON_work::write_to_json(const QString& event_name, const QDate& event_date)
+void JSONWork::write_to_json(const QString& event_name, const QDate& event_date)
 {
     JSONFileManager jsonManager(QIODevice::ReadWrite | QIODevice::Text);
     QJsonArray jArrToSort = jsonManager.readFromJsonArray();
@@ -30,7 +30,7 @@ void JSON_work::write_to_json(const QString& event_name, const QDate& event_date
 }
 
 
-void JSON_work::sort_json_data(QJsonArray &jarrToSort)
+void JSONWork::sort_json_data(QJsonArray &jarrToSort)
 {
     QVector<QDate> datesVec;
     QJsonValue temp;
@@ -71,7 +71,7 @@ void JSON_work::sort_json_data(QJsonArray &jarrToSort)
     }
 }
 
-void JSON_work::delete_from_json(const QString& nameUser, const QString& dateUser)
+void JSONWork::delete_from_json(const QString& nameUser, const QString& dateUser)
 {
     JSONFileManager jsonManager(QIODevice::ReadWrite | QIODevice::Text);
     QJsonArray jArr = jsonManager.readFromJsonArray();

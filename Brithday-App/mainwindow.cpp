@@ -12,9 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     traySysIcon->setVisible(true);
 
     // Get styles from our styles.css
-    QFile file(":/styles/main-styles.css");
-    file.open(QFile::ReadOnly);
-    this->setStyleSheet(file.readAll());
+    this->setStyleSheet(StyleHelper::mainStyles());
     ui->laForData->setAlignment(Qt::AlignTop);
 
     ui->datInput->setDate(QDate::currentDate());
@@ -57,7 +55,6 @@ void MainWindow::checkDate()
 
 QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
 {
-    // QJsonArray jArr = jsonWork.get_json_array();
     JSONFileManager jsonManager;
     QJsonArray jArr = jsonManager.readFromJsonArray();
     QJsonObject obj;
@@ -173,13 +170,11 @@ void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
     userNameFont.setBold(true);
     lblUserName->setFont(userNameFont);
 
-    QFile file(":/styles/list-styles.css");
-    file.open(QFile::ReadOnly);
-
     // Delete button
     std::unique_ptr<QPushButton> deleteButton = std::make_unique<QPushButton>();
     deleteButton->setText("Delete");
-    deleteButton->setStyleSheet(file.readAll());
+    deleteButton->setMinimumHeight(20);
+    deleteButton->setStyleSheet(StyleHelper::listStyles());
 
     connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() {
         jsonWork.delete_from_json(nameUser, dateUser);
@@ -198,10 +193,8 @@ void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
 
 void MainWindow::onAddClicked()
 {
-    QFile file(":/styles/input-styles.css");
-    file.open(QFile::ReadOnly);
     ui->frBackgroundMessage->show();  // Showing message box
-    ui->frBackgroundMessage->setStyleSheet(file.readAll());
+    ui->frBackgroundMessage->setStyleSheet(StyleHelper::inputStyles());
 }
 
 

@@ -10,7 +10,7 @@ QFrame#frMessageOpen {
 QPushButton {
     background-color: rgb(0,0,0);
     color: white;
-    border-radius: 8px;
+    border-radius: 15px;
     font: bold 12px;
 }
 

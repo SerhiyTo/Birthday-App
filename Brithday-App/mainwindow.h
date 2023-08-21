@@ -14,6 +14,7 @@
 #include <QMenu>
 
 #include "work_with_json/json_work.h"
+#include "stylehelper.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -49,7 +50,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon *traySysIcon;
-    JSON_work jsonWork;
+    JSONWork jsonWork;
 
 };
 #endif // MAINWINDOW_H
