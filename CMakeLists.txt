@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
         Brithday-App/resources.qrc
         Brithday-App/work_with_json/json_work.cpp
         Brithday-App/work_with_json/json_work.h
+        Brithday-App/work_with_json/jsonfilemanager.cpp
+        Brithday-App/work_with_json/jsonfilemanager.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

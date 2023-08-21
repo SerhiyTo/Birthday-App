@@ -57,7 +57,9 @@ void MainWindow::checkDate()
 
 QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
 {
-    QJsonArray jArr = jsonWork.get_json_array();
+    // QJsonArray jArr = jsonWork.get_json_array();
+    JSONFileManager jsonManager;
+    QJsonArray jArr = jsonManager.readFromJsonArray();
     QJsonObject obj;
     QString dateString;
     QDate dateFromJson;
@@ -133,7 +135,9 @@ void MainWindow::generateBirthdayWidgets()
     QLayoutItem* wItem;
     while ((wItem = ui->laForData->takeAt(0)) != 0) wItem->widget()->deleteLater();
 
-    QJsonArray jArr = jsonWork.get_json_array();
+    //QJsonArray jArr = jsonWork.get_json_array();
+    JSONFileManager jsonManager;
+    QJsonArray jArr = jsonManager.readFromJsonArray();
     QString dateUser, nameUser;  // Creating variable for using its in loop
 
     for (const QJsonValue &value : jArr)

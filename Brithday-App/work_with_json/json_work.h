@@ -7,6 +7,8 @@
 #include <QJsonArray>
 #include <QFile>
 
+#include "jsonfilemanager.h"
+
 
 class JSON_work : public QObject
 {
@@ -16,10 +18,12 @@ public:
     ~JSON_work();
     void write_to_json(const QString& event_name, const QDate& event_date);
     void sort_json_data(QJsonArray& jarrToSort);
-    QJsonArray get_json_array();
+    // QJsonArray get_json_array();
     void delete_from_json(const QString& nameUser, const QString& dateUser);
 
     const QString file_name = "./EventList.json";
+
+private:
 
 signals:
 
