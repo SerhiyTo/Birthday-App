@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     checkDate();
     generateBirthdayWidgets();
 
+    myEvent = new MyEvent();
+    myEventConfigurationForm = new MyEventConfigurationForm(this, myEvent);
+
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
@@ -194,8 +197,20 @@ void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
 
 void MainWindow::onAddClicked()
 {
-    ui->frBackgroundMessage->show();  // Showing message box
-    ui->frBackgroundMessage->setStyleSheet(StyleHelper::inputStyles());
+    if(myEventConfigurationForm->exec() == QDialog::Accepted)
+    {
+        // Get info
+        QString event_name = ui->lnNameInput->text();
+        QDate event_date = ui->datInput->date();
+        jsonWork.writeToJson(event_name, event_date);
+
+        QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
+
+        // Return to default
+        onCancelClicked();
+
+        generateBirthdayWidgets();
+    }
 }
 
 

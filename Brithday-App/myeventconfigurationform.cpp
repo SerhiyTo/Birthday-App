@@ -22,6 +22,10 @@ void MyEventConfigurationForm::on_btnOk_clicked()
     myEvent->setName(ui->lnNameInput->text());
     myEvent->setDate(ui->datInput->date());
 
+    ui->lnNameInput->setText("");
+    ui->datInput->setDate(QDate());
+    ui->btnOk->setEnabled(false);
+
     accept();
 }
 
@@ -29,5 +33,11 @@ void MyEventConfigurationForm::on_btnOk_clicked()
 void MyEventConfigurationForm::on_btnCancel_clicked()
 {
     reject();
+}
+
+
+void MyEventConfigurationForm::on_lnNameInput_textChanged(const QString &arg1)
+{
+    ui->btnOk->setEnabled(!arg1.isEmpty());
 }
 

@@ -14,7 +14,7 @@
 #include <QMenu>
 
 #include "work_with_json/json_work.h"
-
+#include "myeventconfigurationform.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -52,5 +52,7 @@ private:
     QSystemTrayIcon *traySysIcon;
     JSONWork jsonWork;
 
+    MyEvent *myEvent;
+    MyEventConfigurationForm *myEventConfigurationForm;
 };
 #endif // MAINWINDOW_H
