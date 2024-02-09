@@ -23,7 +23,7 @@ void MyEventConfigurationForm::on_btnOk_clicked()
     myEvent->setDate(ui->datInput->date());
 
     ui->lnNameInput->setText("");
-    ui->datInput->setDate(QDate());
+    ui->datInput->setDate(QDate::currentDate());
     ui->btnOk->setEnabled(false);
 
     accept();

@@ -17,9 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStyleSheet(StyleHelper::mainStyles());
     ui->laForData->setAlignment(Qt::AlignTop);
 
-    ui->datInput->setDate(QDate::currentDate());
-    ui->frBackgroundMessage->hide();
-
     checkDate();
     generateBirthdayWidgets();
 
@@ -29,10 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
-    connect(ui->btnCancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
-    connect(ui->btnOk, &QPushButton::clicked, this, &MainWindow::onOkClicked);
-
-    connect(ui->lnNameInput, &QLineEdit::textChanged, this, &MainWindow::updateOkButtonState);
 }
 
 
@@ -125,12 +118,6 @@ void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void MainWindow::updateOkButtonState(const QString &nameInput)
-{
-    ui->btnOk->setEnabled(!nameInput.isEmpty());
-}
-
-
 void MainWindow::generateBirthdayWidgets()
 {
     // Delete existing tabs
@@ -199,41 +186,10 @@ void MainWindow::onAddClicked()
 {
     if(myEventConfigurationForm->exec() == QDialog::Accepted)
     {
-        // Get info
-        QString event_name = ui->lnNameInput->text();
-        QDate event_date = ui->datInput->date();
-        jsonWork.writeToJson(event_name, event_date);
-
-        QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
-
-        // Return to default
-        onCancelClicked();
+        jsonWork.writeToJson(myEvent->getName(), myEvent->getDate());
 
         generateBirthdayWidgets();
+
+        QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
     }
-}
-
-
-void MainWindow::onCancelClicked()
-{
-    // Clear text boxes and close tab
-    ui->lnNameInput->clear();
-    ui->datInput->setDate(QDate::currentDate());
-    ui->frBackgroundMessage->hide();
-}
-
-
-void MainWindow::onOkClicked()
-{
-    // Get info
-    QString event_name = ui->lnNameInput->text();
-    QDate event_date = ui->datInput->date();
-    jsonWork.writeToJson(event_name, event_date);
-
-    QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
-
-    // Return to default
-    onCancelClicked();
-
-    generateBirthdayWidgets();
 }

@@ -1,6 +1,6 @@
 #include "myevent.h"
 
-MyEvent::MyEvent() {}
+MyEvent::MyEvent() : date(QDate::currentDate()) {}
 
 MyEvent::MyEvent(QString name, QDate date) : name(name), date(date) {}
 
