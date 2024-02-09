@@ -17,15 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStyleSheet(StyleHelper::mainStyles());
     ui->laForData->setAlignment(Qt::AlignTop);
 
-    checkDate();
-    generateBirthdayWidgets();
-
     myEvent = new MyEvent();
     myEventConfigurationForm = new MyEventConfigurationForm(this, myEvent);
 
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
+
+    formLoad();
 }
 
 
@@ -33,6 +32,14 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete traySysIcon;
+}
+
+void MainWindow::formLoad()
+{
+    checkDate();
+    generateBirthdayWidgets();
+    QString eventsToday = checkBirthdayFriends(QDate::currentDate());
+    if(!eventsToday.isEmpty()) sendMessageBox("Todays events", eventsToday);
 }
 
 
@@ -75,8 +82,8 @@ QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
     }
 
     if (counter == 0) peopleName = "";
-    else if (counter == 1) peopleName.push_front("Wish your friend - ");
-    else peopleName.push_front("Wish your friends - ");
+    else if (counter == 1) peopleName.push_front("Wish your friend:\n");
+    else peopleName.push_front("Wish your friends:\n");
 
     return peopleName;
 }
@@ -90,6 +97,11 @@ void MainWindow::sendNotification(const QString &message)
                                  QSystemTrayIcon::Information,
                                  5000);
     }
+}
+
+void MainWindow::sendMessageBox(const QString &title, const QString &message)
+{
+    QMessageBox::information(this, title, message);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

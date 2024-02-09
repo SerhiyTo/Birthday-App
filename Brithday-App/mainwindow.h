@@ -30,12 +30,15 @@ public:
     ~MainWindow();
 
 private:
+    void formLoad();
+
     void generateLabel(const QString& dateUser, const QString& nameUser);
     void generateBirthdayWidgets();
 
     void checkDate();
     QString checkBirthdayFriends(const QDate& dateNow);
     void sendNotification(const QString& message);
+    void sendMessageBox(const QString& title, const QString& message);
 
     void closeEvent(QCloseEvent* event);  // overload function for closing app
     void trayActivated(QSystemTrayIcon::ActivationReason reason);  // function for activated tray system
