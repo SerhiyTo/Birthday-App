@@ -24,6 +24,11 @@ set(PROJECT_SOURCES
         Brithday-App/work_with_json/jsonfilemanager.h
         Brithday-App/stylehelper.cpp
         Brithday-App/stylehelper.h
+        Brithday-App/myevent.cpp
+        Brithday-App/myevent.h
+        Brithday-App/myeventconfigurationform.cpp
+        Brithday-App/myeventconfigurationform.h
+        Brithday-App/myeventconfigurationform.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

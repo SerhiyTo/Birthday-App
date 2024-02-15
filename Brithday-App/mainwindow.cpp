@@ -17,19 +17,14 @@ MainWindow::MainWindow(QWidget *parent)
     this->setStyleSheet(StyleHelper::mainStyles());
     ui->laForData->setAlignment(Qt::AlignTop);
 
-    ui->datInput->setDate(QDate::currentDate());
-    ui->frBackgroundMessage->hide();
-
-    checkDate();
-    generateBirthdayWidgets();
+    myEvent = new MyEvent();
+    myEventConfigurationForm = new MyEventConfigurationForm(this, myEvent);
 
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
-    connect(ui->btnCancel, &QPushButton::clicked, this, &MainWindow::onCancelClicked);
-    connect(ui->btnOk, &QPushButton::clicked, this, &MainWindow::onOkClicked);
 
-    connect(ui->lnNameInput, &QLineEdit::textChanged, this, &MainWindow::updateOkButtonState);
+    formLoad();
 }
 
 
@@ -37,6 +32,14 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete traySysIcon;
+}
+
+void MainWindow::formLoad()
+{
+    checkDate();
+    generateBirthdayWidgets();
+    QString eventsToday = checkBirthdayFriends(QDate::currentDate());
+    if(!eventsToday.isEmpty()) sendMessageBox("Todays events", eventsToday);
 }
 
 
@@ -79,8 +82,8 @@ QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
     }
 
     if (counter == 0) peopleName = "";
-    else if (counter == 1) peopleName.push_front("Wish your friend - ");
-    else peopleName.push_front("Wish your friends - ");
+    else if (counter == 1) peopleName.push_front("Wish your friend:\n");
+    else peopleName.push_front("Wish your friends:\n");
 
     return peopleName;
 }
@@ -94,6 +97,11 @@ void MainWindow::sendNotification(const QString &message)
                                  QSystemTrayIcon::Information,
                                  5000);
     }
+}
+
+void MainWindow::sendMessageBox(const QString &title, const QString &message)
+{
+    QMessageBox::information(this, title, message);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -121,12 +129,6 @@ void MainWindow::trayActivated(QSystemTrayIcon::ActivationReason reason)
         show();  // Show our application (Main Window)
     }
 }
-
-void MainWindow::updateOkButtonState(const QString &nameInput)
-{
-    ui->btnOk->setEnabled(!nameInput.isEmpty());
-}
-
 
 void MainWindow::generateBirthdayWidgets()
 {
@@ -194,31 +196,12 @@ void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
 
 void MainWindow::onAddClicked()
 {
-    ui->frBackgroundMessage->show();  // Showing message box
-    ui->frBackgroundMessage->setStyleSheet(StyleHelper::inputStyles());
-}
+    if(myEventConfigurationForm->exec() == QDialog::Accepted)
+    {
+        jsonWork.writeToJson(myEvent->getName(), myEvent->getDate());
 
+        generateBirthdayWidgets();
 
-void MainWindow::onCancelClicked()
-{
-    // Clear text boxes and close tab
-    ui->lnNameInput->clear();
-    ui->datInput->setDate(QDate::currentDate());
-    ui->frBackgroundMessage->hide();
-}
-
-
-void MainWindow::onOkClicked()
-{
-    // Get info
-    QString event_name = ui->lnNameInput->text();
-    QDate event_date = ui->datInput->date();
-    jsonWork.writeToJson(event_name, event_date);
-
-    QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
-
-    // Return to default
-    onCancelClicked();
-
-    generateBirthdayWidgets();
+        QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
+    }
 }
