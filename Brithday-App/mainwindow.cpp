@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "stylehelper.h"
 #include "work_with_json/jsonfilemanager.h"
+#include "widgetfactory.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -142,10 +143,21 @@ void MainWindow::generateBirthdayWidgets()
 
     for (const QJsonValue &value : jArr)
     {
+        if (ui->laForData->count() >= 6) continue;
         QJsonObject jsonObj = value.toObject();
-        dateUser = jsonObj.value("Date").toString();  // Get data from JSON with key parametr "Date"
         nameUser = jsonObj.value("Name").toString();  // Get data from JSON with key parametr "Name"
-        generateLabel(dateUser, nameUser);  // Calling function "generate label" for display current data in label
+        dateUser = jsonObj.value("Date").toString();  // Get data from JSON with key parametr "Date"
+
+        //display label
+        QWidget* lableWidget = WidgetFactory::getNewEventWidget(nameUser, dateUser, [this, dateUser, nameUser]() {
+                                   jsonWork.deleteFromJson(nameUser, dateUser);
+                                   generateBirthdayWidgets();
+        });
+
+        if(lableWidget){
+            ui->laForData->addWidget(lableWidget);
+        }
+        //generateLabel(dateUser, nameUser);  // Calling function "generate label" for display current data in label
     }
 }
 
