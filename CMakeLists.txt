@@ -29,6 +29,8 @@ set(PROJECT_SOURCES
         Brithday-App/myeventconfigurationform.cpp
         Brithday-App/myeventconfigurationform.h
         Brithday-App/myeventconfigurationform.ui
+        Brithday-App/widgetfactory.h
+        Brithday-App/widgetfactory.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
