@@ -15,6 +15,7 @@ class MyEventConfigurationForm : public QDialog
 public:
     explicit MyEventConfigurationForm(QWidget *parent = nullptr, MyEvent *myEvent = nullptr);
     ~MyEventConfigurationForm();
+    void updateInputInfo();
 
 private slots:
     void on_btnOk_clicked();

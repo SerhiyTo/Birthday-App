@@ -17,6 +17,12 @@ MyEventConfigurationForm::~MyEventConfigurationForm()
     delete ui;
 }
 
+void MyEventConfigurationForm::updateInputInfo()
+{
+    ui->lnNameInput->setText(myEvent->getName());
+    ui->datInput->setDate(myEvent->getDate());
+}
+
 void MyEventConfigurationForm::on_btnOk_clicked()
 {
     myEvent->setName(ui->lnNameInput->text());

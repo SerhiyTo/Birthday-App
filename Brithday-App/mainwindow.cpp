@@ -139,70 +139,39 @@ void MainWindow::generateBirthdayWidgets()
 
     JSONFileManager jsonManager;
     QJsonArray jArr = jsonManager.readFromJsonArray();
-    QString dateUser, nameUser;  // Creating variable for using its in loop
+    QString nameUser, dateUserStr;  // Creating variable for using its in loop
+    QDate dateUser;
 
     for (const QJsonValue &value : jArr)
     {
-        if (ui->laForData->count() >= 6) continue;
+        if (ui->laForData->count() >= 6) return;
         QJsonObject jsonObj = value.toObject();
         nameUser = jsonObj.value("Name").toString();  // Get data from JSON with key parametr "Name"
-        dateUser = jsonObj.value("Date").toString();  // Get data from JSON with key parametr "Date"
+        dateUserStr = jsonObj.value("Date").toString();
+        dateUser = QDate::fromString(dateUserStr, "yyyy-MM-dd");  // Get data from JSON with key parametr "Date"
 
         //display label
-        QWidget* lableWidget = WidgetFactory::getNewEventWidget(nameUser, dateUser, [this, dateUser, nameUser]() {
-                                   jsonWork.deleteFromJson(nameUser, dateUser);
-                                   generateBirthdayWidgets();
-        });
+        QWidget* lableWidget = WidgetFactory::getNewEventWidget(nameUser, dateUserStr,
+            //deleteBtn actions
+            [this, dateUserStr, nameUser]() {
+                jsonWork.deleteFromJson(nameUser, dateUserStr);
+                generateBirthdayWidgets();
+            },
+            //editBtn actions
+            [this, dateUser, dateUserStr, nameUser](){
+                myEvent->setName(nameUser);
+                myEvent->setDate(dateUser);
+                myEventConfigurationForm->updateInputInfo();
+                jsonWork.deleteFromJson(nameUser, dateUserStr);
+                onAddClicked();
+            }
+        );
 
+        //display widget
         if(lableWidget){
             ui->laForData->addWidget(lableWidget);
         }
-        //generateLabel(dateUser, nameUser);  // Calling function "generate label" for display current data in label
     }
-}
-
-
-void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
-{
-    if (ui->laForData->count() >= 6) return; // Don't add new tabs, if count >=x
-
-    std::unique_ptr<QGridLayout> layOneUser = std::make_unique<QGridLayout>();
-    std::unique_ptr<QFrame> frLayWithData = std::make_unique<QFrame>();
-
-    QDate currentDay = QDate::currentDate();
-    QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
-    if (currentDay.daysTo(dateFromString) < 0) return; // Don't add past events
-
-    QString formattedDate = dateFromString.toString("dd.MM");  // Format date
-    QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
-
-    std::unique_ptr<QLabel> lblUserName = std::make_unique<QLabel>(nameUser);  // Creating new Label with User Name
-    std::unique_ptr<QLabel> lblUserDate = std::make_unique<QLabel>(formattedDate + daysToBirthday);  // Creating new Label with our formatted date
-                                                                                                    // and counted days to birthday
-
-    // Label with user name formating
-    QFont userNameFont = lblUserName->font();
-    userNameFont.setBold(true);
-    lblUserName->setFont(userNameFont);
-
-    // Delete button
-    std::unique_ptr<QPushButton> deleteButton = std::make_unique<QPushButton>();
-    deleteButton->setText("Delete");
-    deleteButton->setMinimumHeight(20);
-    deleteButton->setStyleSheet(StyleHelper::listStyles());
-
-    connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() {
-        jsonWork.deleteFromJson(nameUser, dateUser);
-        generateBirthdayWidgets();
-    });
-
-    // Add to form
-    layOneUser->addWidget(lblUserName.release(), 0, 0);
-    layOneUser->addWidget(deleteButton.release(), 0, 1);
-    layOneUser->addWidget(lblUserDate.release(), 1, 0);
-
-    frLayWithData->setLayout(layOneUser.release());
-    ui->laForData->addWidget(frLayWithData.release());
 }
 
 

@@ -13,7 +13,7 @@ class WidgetFactory
 {
 public:
     WidgetFactory();
-    static QWidget* getNewEventWidget(const QString& nameUser, const QString& dateUser, std::function<void()> deleteBtnActions);
+    static QWidget* getNewEventWidget(const QString& nameUser, const QString& dateUser, std::function<void()> deleteBtnActions, std::function<void()> editBtnActions);
 };
 
 #endif // WIDGETFACTORY_H
