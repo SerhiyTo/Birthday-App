@@ -52,12 +52,14 @@ void JSONWork::sortJsonData(QJsonArray &jarrToSort)
         dateString = jarrToSort[i].toObject().value("Date").toString();
         dateFromJson = QDate::fromString(dateString, "yyyy-MM-dd");
 
-        if (QDate::currentDate().daysTo(dateFromJson) < 0)
+        QDate today = QDate::currentDate();
+        if (today.daysTo(dateFromJson) < 0)
         {
             dateFromJson = dateFromJson.addYears(
-                QDate::currentDate().year() - dateFromJson.year() +
-                (QDate::currentDate().month() > dateFromJson.month()
-            ));
+                today.year() - dateFromJson.year() +
+                (today.month() > dateFromJson.month() ||
+                today.day() > dateFromJson.day())
+            );
         }
         datesVec.append(dateFromJson);
         recordObject.insert("Date", QJsonValue::fromVariant(dateFromJson));
