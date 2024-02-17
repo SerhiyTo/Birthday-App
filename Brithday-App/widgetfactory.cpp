@@ -1,8 +1,17 @@
 #include "widgetfactory.h"
 
-WidgetFactory::WidgetFactory()
-{
+#include <QJsonArray>
+#include <QJsonObject>
 
+MainWindow *WidgetFactory::mainWindow = nullptr;
+MyEvent *WidgetFactory::myEvent = nullptr;
+MyEventConfigurationForm *WidgetFactory::myEventConfigurationForm = nullptr;
+
+WidgetFactory::WidgetFactory(MainWindow *mainWindow, MyEvent *myEvent, MyEventConfigurationForm *myEventConfigurationForm)
+{
+    WidgetFactory::mainWindow = mainWindow;
+    WidgetFactory::myEvent = myEvent;
+    WidgetFactory::myEventConfigurationForm = myEventConfigurationForm;
 }
 
 QWidget *WidgetFactory::getNewEventWidget(const QString &nameUser, const QString &dateUser, std::function<void()> deleteBtnActions, std::function<void()> editBtnActions)
@@ -56,4 +65,67 @@ QWidget *WidgetFactory::getNewEventWidget(const QString &nameUser, const QString
     frLayWithData->setLayout(layOneUser.release());
 
     return frLayWithData.release();
+}
+
+void WidgetFactory::generateWidgetsFromJson(QLayout *targetLayout)
+{
+    // Delete existing widgets from the container
+    QLayoutItem* wItem;
+    while ((wItem = targetLayout->takeAt(0)) != nullptr) {
+        QWidget* widgetToRemove = wItem->widget();
+        if (widgetToRemove) {
+            widgetToRemove->deleteLater();
+        }
+        delete wItem;
+    }
+
+    JSONFileManager jsonManager;
+    QJsonArray jArr = jsonManager.readFromJsonArray();
+    QString nameUser, dateUserStr;  // Creating variables for use in the loop
+    QDate dateUser;
+
+    //coordinates for widget insertion into QGridLayoutvv
+    int row = 0;
+    int col = 0;
+    const int maxCols = 3; // Maximum number of columns before switching to a new row
+
+    for (const QJsonValue &value : jArr)
+    {
+        if (targetLayout->count() >= 6) return;
+        QJsonObject jsonObj = value.toObject();
+        nameUser = jsonObj.value("Name").toString();
+        dateUserStr = jsonObj.value("Date").toString();
+        dateUser = QDate::fromString(dateUserStr, "yyyy-MM-dd");
+
+        // Cerating label
+        QWidget* eventWidget = WidgetFactory::getNewEventWidget(nameUser, dateUserStr,
+            // deleteBtn actions
+            [dateUserStr, nameUser, targetLayout]() {
+                JSONWork::deleteFromJson(nameUser, dateUserStr);
+                generateWidgetsFromJson(targetLayout);
+            },
+            // editBtn actions
+            [dateUser, dateUserStr, nameUser]() {
+                myEvent->setName(nameUser);
+                myEvent->setDate(dateUser);
+                myEventConfigurationForm->updateInputInfo();
+                JSONWork::deleteFromJson(nameUser, dateUserStr);
+                mainWindow->onAddBtnClicked();
+
+            }
+        );
+        // Display widget
+        if (eventWidget) {
+            if (QGridLayout *gridLayout = qobject_cast<QGridLayout*>(targetLayout)) {
+                gridLayout->addWidget(eventWidget, row, col);
+                col++;
+                if (col >= maxCols) {
+                    col = 0;
+                    row++;
+                }
+            } else {
+                targetLayout->addWidget(eventWidget);
+            }
+        }
+    }
 }

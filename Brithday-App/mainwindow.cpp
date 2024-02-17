@@ -21,9 +21,10 @@ MainWindow::MainWindow(QWidget *parent)
     myEvent = new MyEvent();
     myEventConfigurationForm = new MyEventConfigurationForm(this, myEvent);
 
+    WidgetFactory(this, myEvent, myEventConfigurationForm);
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
-    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
+    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddBtnClicked);
 
     formLoad();
 }
@@ -38,7 +39,7 @@ MainWindow::~MainWindow()
 void MainWindow::formLoad()
 {
     checkDate();
-    generateBirthdayWidgets();
+    WidgetFactory::generateWidgetsFromJson(ui->laForData);
     QString eventsToday = checkBirthdayFriends(QDate::currentDate());
     if(!eventsToday.isEmpty()) sendMessageBox("Todays events", eventsToday);
 }
@@ -163,7 +164,7 @@ void MainWindow::generateBirthdayWidgets()
                 myEvent->setDate(dateUser);
                 myEventConfigurationForm->updateInputInfo();
                 jsonWork.deleteFromJson(nameUser, dateUserStr);
-                onAddClicked();
+                onAddBtnClicked();
             }
         );
 
@@ -175,13 +176,13 @@ void MainWindow::generateBirthdayWidgets()
 }
 
 
-void MainWindow::onAddClicked()
+void MainWindow::onAddBtnClicked()
 {
     if(myEventConfigurationForm->exec() == QDialog::Accepted)
     {
-        jsonWork.writeToJson(myEvent->getName(), myEvent->getDate());
+        JSONWork::writeToJson(myEvent->getName(), myEvent->getDate());
 
-        generateBirthdayWidgets();
+        WidgetFactory::generateWidgetsFromJson(ui->laForData);
 
         QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
     }

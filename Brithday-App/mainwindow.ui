@@ -101,7 +101,7 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="gridLayoutWidget">
+    <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -110,7 +110,7 @@
        <height>511</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="laForData"/>
+     <layout class="QVBoxLayout" name="laForData"/>
     </widget>
    </widget>
    <widget class="QPushButton" name="btnAddPeople">

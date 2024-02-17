@@ -43,8 +43,8 @@ private:
     void closeEvent(QCloseEvent* event);  // overload function for closing app
     void trayActivated(QSystemTrayIcon::ActivationReason reason);  // function for activated tray system
 
-private slots:
-    void onAddClicked();
+public slots:
+    void onAddBtnClicked();
 
 private:
     Ui::MainWindow *ui;

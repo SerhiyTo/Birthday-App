@@ -12,9 +12,9 @@ class JSONWork : public QObject
 public:
     explicit JSONWork(QObject *parent = nullptr);
     ~JSONWork();
-    void writeToJson(const QString& event_name, const QDate& event_date);
-    void sortJsonData(QJsonArray& jarrToSort);
-    void deleteFromJson(const QString& nameUser, const QString& dateUser);
+    static void writeToJson(const QString& event_name, const QDate& event_date);
+    static void sortJsonData(QJsonArray& jarrToSort);
+    static void deleteFromJson(const QString& nameUser, const QString& dateUser);
 
 signals:
 
