@@ -49,6 +49,8 @@ public slots:
 private slots:
     void onBtnShowAllEventsClicked();
 
+    void on_btnShowAllEvents_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon *traySysIcon;

@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onBtnAddClicked);
+    connect(ui->btnShowAllEvents, &QPushButton::clicked, this, &MainWindow::onBtnShowAllEventsClicked);
 
     formLoad();
 }
