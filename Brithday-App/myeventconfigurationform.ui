@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Event configurator</string>
   </property>
   <widget class="QFrame" name="frMessageOpen">
    <property name="geometry">
@@ -38,7 +38,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="lblAddingPeople">
       <property name="text">
-       <string>Adding people</string>
+       <string>Event config</string>
       </property>
      </widget>
     </item>
@@ -47,7 +47,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Enter the people's name:</string>
+         <string>Enter the event's name:</string>
         </property>
        </widget>
       </item>
@@ -61,7 +61,7 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Enter the people's birthday</string>
+         <string>Enter the event's date</string>
         </property>
        </widget>
       </item>

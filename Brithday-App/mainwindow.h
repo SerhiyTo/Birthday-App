@@ -15,7 +15,7 @@
 
 #include "work_with_json/json_work.h"
 #include "myeventconfigurationform.h"
-
+#include "alleventlistform.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -37,14 +37,17 @@ private:
 
     void checkDate();
     QString checkBirthdayFriends(const QDate& dateNow);
-    void sendNotification(const QString& message);
+    void sendTrayNotification(const QString& message);
     void sendMessageBox(const QString& title, const QString& message);
 
     void closeEvent(QCloseEvent* event);  // overload function for closing app
     void trayActivated(QSystemTrayIcon::ActivationReason reason);  // function for activated tray system
 
+public slots:
+    void onBtnAddClicked();
+
 private slots:
-    void onAddClicked();
+    void onBtnShowAllEventsClicked();
 
 private:
     Ui::MainWindow *ui;
@@ -53,5 +56,6 @@ private:
 
     MyEvent *myEvent;
     MyEventConfigurationForm *myEventConfigurationForm;
+    AllEventListForm *allEventListForm;
 };
 #endif // MAINWINDOW_H

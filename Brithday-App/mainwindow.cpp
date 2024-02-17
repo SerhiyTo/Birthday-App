@@ -6,8 +6,8 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     traySysIcon = new QSystemTrayIcon(this);
@@ -17,13 +17,18 @@ MainWindow::MainWindow(QWidget *parent)
     // Get styles from our styles.css
     this->setStyleSheet(StyleHelper::mainStyles());
     ui->laForData->setAlignment(Qt::AlignTop);
+    ui->btnShowAllEvents->setStyleSheet(StyleHelper::listStyles());
 
     myEvent = new MyEvent();
     myEventConfigurationForm = new MyEventConfigurationForm(this, myEvent);
+    allEventListForm = new AllEventListForm(this);
+
+    //initialisation for static methods
+    WidgetFactory(this, myEvent, myEventConfigurationForm);
 
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
-    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddClicked);
+    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onBtnAddClicked);
 
     formLoad();
 }
@@ -38,7 +43,7 @@ MainWindow::~MainWindow()
 void MainWindow::formLoad()
 {
     checkDate();
-    generateBirthdayWidgets();
+    WidgetFactory::generateWidgetsFromJson(ui->laForData);
     QString eventsToday = checkBirthdayFriends(QDate::currentDate());
     if(!eventsToday.isEmpty()) sendMessageBox("Todays events", eventsToday);
 }
@@ -53,7 +58,7 @@ void MainWindow::checkDate()
         if (lastSavedDate.daysTo(QDate::currentDate()) != 0) {
             lastSavedDate = QDate::currentDate();
             generateBirthdayWidgets();
-            sendNotification(checkBirthdayFriends(lastSavedDate));
+            sendTrayNotification(checkBirthdayFriends(lastSavedDate));
         }
     });
     timer->start(delay);
@@ -89,7 +94,7 @@ QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
     return peopleName;
 }
 
-void MainWindow::sendNotification(const QString &message)
+void MainWindow::sendTrayNotification(const QString &message)
 {
     if (!message.isEmpty())
     {
@@ -139,81 +144,59 @@ void MainWindow::generateBirthdayWidgets()
 
     JSONFileManager jsonManager;
     QJsonArray jArr = jsonManager.readFromJsonArray();
-    QString dateUser, nameUser;  // Creating variable for using its in loop
+    QString nameUser, dateUserStr;  // Creating variable for using its in loop
+    QDate dateUser;
 
     for (const QJsonValue &value : jArr)
     {
-        if (ui->laForData->count() >= 6) continue;
+        if (ui->laForData->count() >= 6) return;
         QJsonObject jsonObj = value.toObject();
         nameUser = jsonObj.value("Name").toString();  // Get data from JSON with key parametr "Name"
-        dateUser = jsonObj.value("Date").toString();  // Get data from JSON with key parametr "Date"
+        dateUserStr = jsonObj.value("Date").toString();
+        dateUser = QDate::fromString(dateUserStr, "yyyy-MM-dd");  // Get data from JSON with key parametr "Date"
 
         //display label
-        QWidget* lableWidget = WidgetFactory::getNewEventWidget(nameUser, dateUser, [this, dateUser, nameUser]() {
-                                   jsonWork.deleteFromJson(nameUser, dateUser);
-                                   generateBirthdayWidgets();
-        });
+        QWidget* lableWidget = WidgetFactory::getNewEventWidget(nameUser, dateUserStr,
+            //deleteBtn actions
+            [this, dateUserStr, nameUser]() {
+                jsonWork.deleteFromJson(nameUser, dateUserStr);
+                generateBirthdayWidgets();
+            },
+            //editBtn actions
+            [this, dateUser, dateUserStr, nameUser](){
+                myEvent->setName(nameUser);
+                myEvent->setDate(dateUser);
+                myEventConfigurationForm->updateInputInfo();
+                jsonWork.deleteFromJson(nameUser, dateUserStr);
+                onBtnAddClicked();
+            }
+        );
 
+        //display widget
         if(lableWidget){
             ui->laForData->addWidget(lableWidget);
         }
-        //generateLabel(dateUser, nameUser);  // Calling function "generate label" for display current data in label
     }
 }
 
 
-void MainWindow::generateLabel(const QString& dateUser, const QString& nameUser)
-{
-    if (ui->laForData->count() >= 6) return; // Don't add new tabs, if count >=x
-
-    std::unique_ptr<QGridLayout> layOneUser = std::make_unique<QGridLayout>();
-    std::unique_ptr<QFrame> frLayWithData = std::make_unique<QFrame>();
-
-    QDate currentDay = QDate::currentDate();
-    QDate dateFromString = QDate::fromString(dateUser, "yyyy-MM-dd");
-    if (currentDay.daysTo(dateFromString) < 0) return; // Don't add past events
-
-    QString formattedDate = dateFromString.toString("dd.MM");  // Format date
-    QString daysToBirthday = " (Days to Birthday: " + QString::number(currentDay.daysTo(dateFromString)) + ")";
-
-    std::unique_ptr<QLabel> lblUserName = std::make_unique<QLabel>(nameUser);  // Creating new Label with User Name
-    std::unique_ptr<QLabel> lblUserDate = std::make_unique<QLabel>(formattedDate + daysToBirthday);  // Creating new Label with our formatted date
-                                                                                                    // and counted days to birthday
-
-    // Label with user name formating
-    QFont userNameFont = lblUserName->font();
-    userNameFont.setBold(true);
-    lblUserName->setFont(userNameFont);
-
-    // Delete button
-    std::unique_ptr<QPushButton> deleteButton = std::make_unique<QPushButton>();
-    deleteButton->setText("Delete");
-    deleteButton->setMinimumHeight(20);
-    deleteButton->setStyleSheet(StyleHelper::listStyles());
-
-    connect(deleteButton.get(), &QPushButton::clicked, this, [this, dateUser, nameUser]() {
-        jsonWork.deleteFromJson(nameUser, dateUser);
-        generateBirthdayWidgets();
-    });
-
-    // Add to form
-    layOneUser->addWidget(lblUserName.release(), 0, 0);
-    layOneUser->addWidget(deleteButton.release(), 0, 1);
-    layOneUser->addWidget(lblUserDate.release(), 1, 0);
-
-    frLayWithData->setLayout(layOneUser.release());
-    ui->laForData->addWidget(frLayWithData.release());
-}
-
-
-void MainWindow::onAddClicked()
+void MainWindow::onBtnAddClicked()
 {
     if(myEventConfigurationForm->exec() == QDialog::Accepted)
     {
-        jsonWork.writeToJson(myEvent->getName(), myEvent->getDate());
+        JSONWork::writeToJson(myEvent->getName(), myEvent->getDate());
 
-        generateBirthdayWidgets();
+        WidgetFactory::generateWidgetsFromJson(ui->laForData);
 
         QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
     }
 }
+
+void MainWindow::onBtnShowAllEventsClicked()
+{
+    WidgetFactory::generateWidgetsFromJson(allEventListForm->getEventContainerLayout(), false);
+    if(allEventListForm->exec() == QDialog::Accepted){
+
+    }
+}
+
