@@ -6,8 +6,8 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    : QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     traySysIcon = new QSystemTrayIcon(this);
@@ -17,14 +17,18 @@ MainWindow::MainWindow(QWidget *parent)
     // Get styles from our styles.css
     this->setStyleSheet(StyleHelper::mainStyles());
     ui->laForData->setAlignment(Qt::AlignTop);
+    ui->btnShowAllEvents->setStyleSheet(StyleHelper::listStyles());
 
     myEvent = new MyEvent();
     myEventConfigurationForm = new MyEventConfigurationForm(this, myEvent);
+    allEventListForm = new AllEventListForm(this);
 
+    //initialisation for static methods
     WidgetFactory(this, myEvent, myEventConfigurationForm);
+
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
-    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onAddBtnClicked);
+    connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onBtnAddClicked);
 
     formLoad();
 }
@@ -54,7 +58,7 @@ void MainWindow::checkDate()
         if (lastSavedDate.daysTo(QDate::currentDate()) != 0) {
             lastSavedDate = QDate::currentDate();
             generateBirthdayWidgets();
-            sendNotification(checkBirthdayFriends(lastSavedDate));
+            sendTrayNotification(checkBirthdayFriends(lastSavedDate));
         }
     });
     timer->start(delay);
@@ -90,7 +94,7 @@ QString MainWindow::checkBirthdayFriends(const QDate& dateNow)
     return peopleName;
 }
 
-void MainWindow::sendNotification(const QString &message)
+void MainWindow::sendTrayNotification(const QString &message)
 {
     if (!message.isEmpty())
     {
@@ -164,7 +168,7 @@ void MainWindow::generateBirthdayWidgets()
                 myEvent->setDate(dateUser);
                 myEventConfigurationForm->updateInputInfo();
                 jsonWork.deleteFromJson(nameUser, dateUserStr);
-                onAddBtnClicked();
+                onBtnAddClicked();
             }
         );
 
@@ -176,7 +180,7 @@ void MainWindow::generateBirthdayWidgets()
 }
 
 
-void MainWindow::onAddBtnClicked()
+void MainWindow::onBtnAddClicked()
 {
     if(myEventConfigurationForm->exec() == QDialog::Accepted)
     {
@@ -187,3 +191,12 @@ void MainWindow::onAddBtnClicked()
         QMessageBox::information(this, "People was added!", "Adding people to database was sucessed");
     }
 }
+
+void MainWindow::onBtnShowAllEventsClicked()
+{
+    WidgetFactory::generateWidgetsFromJson(allEventListForm->getEventContainerLayout(), false);
+    if(allEventListForm->exec() == QDialog::Accepted){
+
+    }
+}
+

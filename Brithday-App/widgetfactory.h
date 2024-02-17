@@ -20,7 +20,7 @@ class WidgetFactory
 public:
     WidgetFactory(MainWindow *mainWindow, MyEvent *myEvent, MyEventConfigurationForm *myEventConfigurationForm);
     static QWidget* getNewEventWidget(const QString& nameUser, const QString& dateUser, std::function<void()> deleteBtnActions, std::function<void()> editBtnActions);
-    static void generateWidgetsFromJson(QLayout *targetLayout);
+    static void generateWidgetsFromJson(QLayout *targetLayout, bool isLimitedCount = true);
 private:
     static MainWindow *mainWindow;
     static MyEvent *myEvent;

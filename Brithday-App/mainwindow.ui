@@ -82,7 +82,7 @@
          </font>
         </property>
         <property name="text">
-         <string>🎉 Upcoming birthdays</string>
+         <string>🎉 Upcoming events</string>
         </property>
        </widget>
       </item>
@@ -168,7 +168,7 @@
        </property>
        <property name="text">
         <string>✍️ Click the button below
- to add a new person
+ to add a new event
  to the database</string>
        </property>
        <property name="textFormat">
@@ -181,9 +181,23 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="btnShowAllEvents">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>510</y>
+      <width>121</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show all events</string>
+    </property>
+   </widget>
    <zorder>btnAddPeople</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>frWithData</zorder>
+   <zorder>btnShowAllEvents</zorder>
   </widget>
  </widget>
  <resources>

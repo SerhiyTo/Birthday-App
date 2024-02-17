@@ -67,7 +67,7 @@ QWidget *WidgetFactory::getNewEventWidget(const QString &nameUser, const QString
     return frLayWithData.release();
 }
 
-void WidgetFactory::generateWidgetsFromJson(QLayout *targetLayout)
+void WidgetFactory::generateWidgetsFromJson(QLayout *targetLayout, bool isLimitedCount)
 {
     // Delete existing widgets from the container
     QLayoutItem* wItem;
@@ -91,7 +91,7 @@ void WidgetFactory::generateWidgetsFromJson(QLayout *targetLayout)
 
     for (const QJsonValue &value : jArr)
     {
-        if (targetLayout->count() >= 6) return;
+        if (targetLayout->count() >= 6 && isLimitedCount) return;
         QJsonObject jsonObj = value.toObject();
         nameUser = jsonObj.value("Name").toString();
         dateUserStr = jsonObj.value("Date").toString();
@@ -105,13 +105,13 @@ void WidgetFactory::generateWidgetsFromJson(QLayout *targetLayout)
                 generateWidgetsFromJson(targetLayout);
             },
             // editBtn actions
-            [dateUser, dateUserStr, nameUser]() {
+            [dateUser, dateUserStr, nameUser, targetLayout]() {
                 myEvent->setName(nameUser);
                 myEvent->setDate(dateUser);
                 myEventConfigurationForm->updateInputInfo();
                 JSONWork::deleteFromJson(nameUser, dateUserStr);
-                mainWindow->onAddBtnClicked();
-
+                mainWindow->onBtnAddClicked();
+                generateWidgetsFromJson(targetLayout);
             }
         );
         // Display widget
