@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Connect all signals with slots
     connect(traySysIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayActivated);
     connect(ui->btnAddPeople, &QPushButton::clicked, this, &MainWindow::onBtnAddClicked);
+    connect(ui->btnShowAllEvents, &QPushButton::clicked, this, &MainWindow::onBtnShowAllEventsClicked);
 
     formLoad();
 }
@@ -42,10 +43,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::formLoad()
 {
+    JSONWork::updateJsonDataBySorting();
     checkDate();
     WidgetFactory::generateWidgetsFromJson(ui->laForData);
     QString eventsToday = checkBirthdayFriends(QDate::currentDate());
     if(!eventsToday.isEmpty()) sendMessageBox("Todays events", eventsToday);
+
 }
 
 

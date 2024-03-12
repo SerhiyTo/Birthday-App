@@ -90,3 +90,11 @@ void JSONWork::deleteFromJson(const QString& nameUser, const QString& dateUser)
 
     jsonManager.writeJsonArray(jArr);
 }
+
+void JSONWork::updateJsonDataBySorting()
+{
+    JSONFileManager jsonManager(QIODevice::ReadWrite | QIODevice::Text);
+    QJsonArray jArrToSort = jsonManager.readFromJsonArray();
+    sortJsonData(jArrToSort);
+    jsonManager.writeJsonArray(jArrToSort);
+}

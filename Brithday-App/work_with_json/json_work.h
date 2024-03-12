@@ -15,6 +15,7 @@ public:
     static void writeToJson(const QString& event_name, const QDate& event_date);
     static void sortJsonData(QJsonArray& jarrToSort);
     static void deleteFromJson(const QString& nameUser, const QString& dateUser);
+    static void updateJsonDataBySorting();
 
 signals:
 
