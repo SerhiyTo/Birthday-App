@@ -43,10 +43,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::formLoad()
 {
+    JSONWork::updateJsonDataBySorting();
     checkDate();
     WidgetFactory::generateWidgetsFromJson(ui->laForData);
     QString eventsToday = checkBirthdayFriends(QDate::currentDate());
     if(!eventsToday.isEmpty()) sendMessageBox("Todays events", eventsToday);
+
 }
 
 
